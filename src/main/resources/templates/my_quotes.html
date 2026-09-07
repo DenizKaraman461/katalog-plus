@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tekliflerim | Deniz Çelik Halat</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Saira+Condensed:wght@500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        :root{
+            --ink:#050506; --panel:rgba(14,14,16,.74); --line:rgba(255,215,0,.22);
+            --gold:#FFD700; --gold-2:#E9C200; --text:#ECECEC; --muted:#9a9a9a; --ok:#7CFC9B;
+            --f-display:'Saira Condensed',system-ui,sans-serif;
+            --f-body:'Inter',system-ui,sans-serif; --f-mono:'JetBrains Mono',ui-monospace,monospace;
+        }
+        *{box-sizing:border-box}
+        body{margin:0; min-height:100vh; color:var(--text); font-family:var(--f-body); padding-top:104px;
+            background:linear-gradient(180deg, rgba(3,3,4,.9), rgba(3,3,4,.94)), url('/uploads/Background.png') no-repeat center center fixed; background-size:cover}
+        .site-nav{background:rgba(0,0,0,.86); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:.45rem 0}
+        .brand-logo{height:52px; width:auto; filter:drop-shadow(0 0 10px rgba(255,215,0,.28))}
+        .navbar-toggler{border:1px solid var(--line); padding:.3rem .55rem; border-radius:8px}
+        .navbar-toggler i{color:var(--gold); font-size:1.5rem; line-height:1}
+        .main-links{gap:.15rem}
+        .nav-link{color:#e9e9e9 !important; font-weight:500; display:flex; align-items:center; gap:8px; padding:.5rem .95rem !important; border-radius:8px}
+        .nav-link i{color:var(--gold)}
+        .nav-link:hover{color:#fff !important; background:rgba(255,215,0,.08)}
+        .nav-auth{display:flex; align-items:center; gap:10px}
+        .btn-nav-ghost{display:inline-flex; align-items:center; gap:7px; border:1.5px solid var(--line); color:var(--gold); padding:.5rem 1rem; border-radius:10px; text-decoration:none; font-weight:600; white-space:nowrap}
+        .btn-nav-gold{display:inline-flex; align-items:center; gap:7px; background:linear-gradient(180deg,#FFE970,#FFD700 55%,#E9C200); color:#100d00; padding:.5rem 1.05rem; border-radius:10px; text-decoration:none; font-weight:700; white-space:nowrap}
+        @media (max-width:991px){
+            .navbar-collapse{background:rgba(8,8,10,.98); border:1px solid var(--line); border-radius:14px; margin-top:12px; padding:16px}
+            .nav-auth{flex-wrap:wrap; margin-top:14px; padding-top:14px; border-top:1px dashed var(--line)}
+            .btn-nav-ghost,.btn-nav-gold{flex:1 1 auto; justify-content:center}
+        }
+        .shell{max-width:1040px; margin:0 auto; padding:24px 18px 70px}
+        .page-head{margin-bottom:22px}
+        .eyebrow{font-family:var(--f-mono); font-size:.72rem; letter-spacing:.3em; color:var(--gold-2); text-transform:uppercase; margin-bottom:6px}
+        .page-title{font-family:var(--f-display); font-weight:700; text-transform:uppercase; letter-spacing:.04em; font-size:2rem; color:#fff; margin:0; text-shadow:0 0 10px rgba(255,215,0,.4)}
+        .empty{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:40px; text-align:center; color:var(--muted)}
+        .empty i{font-size:2.4rem; color:var(--gold); display:block; margin-bottom:10px}
+        .empty a{color:var(--gold); text-decoration:none; font-weight:600}
+        .qcard{position:relative; background:var(--panel); backdrop-filter:blur(16px) saturate(120%); border:1px solid var(--line); border-radius:16px; padding:20px 22px; margin-bottom:18px; box-shadow:0 20px 50px rgba(0,0,0,.5)}
+        .qhead{display:flex; justify-content:space-between; align-items:flex-start; gap:14px; flex-wrap:wrap; margin-bottom:14px; padding-bottom:12px; border-bottom:1px dashed var(--line)}
+        .qcode{font-family:var(--f-mono); font-weight:700; font-size:1.2rem; color:var(--gold); letter-spacing:.04em}
+        .qprod{font-family:var(--f-display); font-weight:700; font-size:1.15rem; color:#fff; margin-top:2px}
+        .qmeta{display:flex; flex-direction:column; align-items:flex-end; gap:8px}
+        .qdate{font-family:var(--f-mono); font-size:.78rem; color:var(--gold-2); white-space:nowrap}
+        .status-pill{font-family:var(--f-mono); font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; padding:5px 12px; border-radius:999px; border:1px solid var(--line); white-space:nowrap}
+        .st-NEW{color:#ffe27a; border-color:rgba(255,215,0,.45); background:rgba(255,215,0,.08)}
+        .st-CONTACTED{color:#86c5ff; border-color:rgba(110,170,255,.45); background:rgba(110,170,255,.1)}
+        .st-OFFER_SENT{color:#c5a3ff; border-color:rgba(170,130,255,.45); background:rgba(170,130,255,.1)}
+        .st-CLOSED{color:var(--ok); border-color:rgba(124,252,155,.45); background:rgba(124,252,155,.08)}
+        .st-CANCELLED{color:#ff8b8b; border-color:rgba(255,82,82,.45); background:rgba(255,82,82,.1)}
+        .qgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px 22px}
+        .qrow .k{font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+        .qrow .v{color:#fff; margin-top:2px; word-break:break-word}
+        .badge-cert{display:inline-flex; align-items:center; gap:6px; font-family:var(--f-mono); font-size:.72rem; padding:5px 11px; border-radius:999px; border:1px solid rgba(124,252,155,.4); color:var(--ok); background:rgba(124,252,155,.08)}
+        .badge-no{display:inline-flex; align-items:center; gap:6px; font-family:var(--f-mono); font-size:.72rem; padding:5px 11px; border-radius:999px; border:1px solid var(--line); color:var(--muted)}
+        .qnote{margin-top:14px; padding-top:12px; border-top:1px dashed var(--line)}
+        .qnote .k{font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:4px}
+        .qnote .v{color:#e8e8e8; white-space:pre-line; line-height:1.55}
+        .actions{display:flex; gap:12px; flex-wrap:wrap; margin-top:6px}
+        .btn-ghost{display:inline-flex; align-items:center; gap:8px; padding:.66rem 1.3rem; border:1.5px solid var(--line); border-radius:11px; color:#ddd; text-decoration:none; font-weight:600}
+        .btn-ghost:hover{border-color:#fff; color:#fff; background:rgba(255,255,255,.05)}
+        @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg fixed-top site-nav">
+    <div class="container">
+        <a class="navbar-brand" href="/"><img src="/uploads/deniz-logo.png" alt="Deniz Çelik Halat" class="brand-logo" /></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"><i class="bi bi-list"></i></button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav mx-lg-auto mb-2 mb-lg-0 main-links">
+                <li class="nav-item"><a class="nav-link" href="/"><i class="bi bi-house-fill"></i> Anasayfa</a></li>
+                <li class="nav-item"><a class="nav-link" href="/products"><i class="bi bi-grid-3x3-gap-fill"></i> Ürünler</a></li>
+                <li class="nav-item"><a class="nav-link" href="/cart"><i class="bi bi-cart-fill"></i> Sepetim</a></li>
+            </ul>
+            <div class="nav-auth">
+                <a sec:authorize="hasRole('ADMIN')" href="/admin/orders" class="btn-nav-ghost"><i class="bi bi-clipboard-data"></i> Admin Siparişleri</a>
+                <a sec:authorize="hasRole('ADMIN')" href="/admin/quotes" class="btn-nav-ghost"><i class="bi bi-file-earmark-text"></i> Admin Teklifleri</a>
+                <a sec:authorize="isAuthenticated()" href="/my-quotes" class="btn-nav-ghost"><i class="bi bi-chat-left-text"></i> Tekliflerim</a>
+                <a sec:authorize="isAuthenticated()" href="/orders" class="btn-nav-gold"><i class="bi bi-box-seam"></i> Siparişlerim</a>
+                <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" style="display:inline-flex; margin:0;">
+                    <button type="submit" class="btn-nav-ghost" style="background:transparent; cursor:pointer;"><i class="bi bi-box-arrow-right"></i> Çıkış</button>
+                </form>
+                <a sec:authorize="!isAuthenticated()" href="/login" class="btn-nav-gold"><i class="bi bi-box-arrow-in-right"></i> Giriş Yap</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="shell">
+
+    <div class="page-head">
+        <div class="eyebrow">Hesabım</div>
+        <h1 class="page-title">Tekliflerim</h1>
+    </div>
+
+    <!-- Boş durum -->
+    <div class="empty" th:if="${quotes == null or quotes.isEmpty()}">
+        <i class="bi bi-inbox"></i>
+        Henüz teklif talebiniz yok.
+        <div style="margin-top:10px;"><a href="/products">Ürünleri inceleyin</a></div>
+    </div>
+
+    <!-- Teklif kartları (salt görüntüleme) -->
+    <div th:each="q : ${quotes}" class="qcard">
+        <div class="qhead">
+            <div>
+                <div class="qcode" th:text="|#TKL-${q.id}|">#TKL-0</div>
+                <div class="qprod" th:text="${q.productName} ?: 'Ürün'">Ürün Adı</div>
+            </div>
+            <div class="qmeta">
+                <div class="qdate" th:text="${q.createdAt != null} ? ${#temporals.format(q.createdAt,'dd.MM.yyyy HH:mm')} : '—'">—</div>
+                <span class="status-pill" th:classappend="${'st-' + (q.status != null ? q.status : 'NEW')}"
+                      th:switch="${q.status != null ? q.status : 'NEW'}">
+                    <span th:case="'NEW'">Yeni Talep</span>
+                    <span th:case="'CONTACTED'">Müşteri Arandı</span>
+                    <span th:case="'OFFER_SENT'">Teklif Gönderildi</span>
+                    <span th:case="'CLOSED'">Tamamlandı</span>
+                    <span th:case="'CANCELLED'">İptal</span>
+                    <span th:case="*" th:text="${q.status}">—</span>
+                </span>
+            </div>
+        </div>
+
+        <div class="qgrid">
+            <div class="qrow"><div class="k">Adet</div><div class="v" th:text="${q.quantity} ?: '—'">—</div></div>
+            <div class="qrow"><div class="k">Telefon</div><div class="v" th:text="${q.phone} ?: '—'">—</div></div>
+            <div class="qrow"><div class="k">E-posta</div><div class="v" th:text="${q.email} ?: '—'">—</div></div>
+            <div class="qrow"><div class="k">Firma</div><div class="v" th:text="${q.companyName} ?: '—'">—</div></div>
+            <div class="qrow" th:if="${q.slingType != null and !q.slingType.isBlank()}"><div class="k">Sapan Tipi</div><div class="v" th:text="${q.slingType}">—</div></div>
+            <div class="qrow" th:if="${q.legCount != null}"><div class="k">Kol Sayısı</div><div class="v" th:text="${q.legCount}">—</div></div>
+            <div class="qrow" th:if="${q.ropeDiameter != null and !q.ropeDiameter.isBlank()}"><div class="k">Halat Çapı</div><div class="v" th:text="${q.ropeDiameter}">—</div></div>
+            <div class="qrow" th:if="${q.ropeType != null and !q.ropeType.isBlank()}"><div class="k">Halat Tipi</div><div class="v" th:text="${q.ropeType}">—</div></div>
+            <div class="qrow" th:if="${q.length != null and !q.length.isBlank()}"><div class="k">Uzunluk</div><div class="v" th:text="${q.length}">—</div></div>
+            <div class="qrow" th:if="${q.capacity != null and !q.capacity.isBlank()}"><div class="k">Taşıma Kapasitesi</div><div class="v" th:text="${q.capacity}">—</div></div>
+            <div class="qrow" th:if="${q.workingAngle != null and !q.workingAngle.isBlank()}"><div class="k">Çalışma Açısı</div><div class="v" th:text="${q.workingAngle}">—</div></div>
+            <div class="qrow" th:if="${q.topConnection != null and !q.topConnection.isBlank()}"><div class="k">Üst Bağlantı</div><div class="v" th:text="${q.topConnection}">—</div></div>
+            <div class="qrow" th:if="${q.bottomConnection != null and !q.bottomConnection.isBlank()}"><div class="k">Alt Bağlantı</div><div class="v" th:text="${q.bottomConnection}">—</div></div>
+            <div class="qrow">
+                <div class="k">Sertifika</div>
+                <div class="v">
+                    <span th:if="${q.certificateRequested}" class="badge-cert"><i class="bi bi-patch-check-fill"></i> İsteniyor</span>
+                    <span th:unless="${q.certificateRequested}" class="badge-no">İstenmiyor</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="qnote" th:if="${q.note != null and !q.note.isBlank()}">
+            <div class="k">Not</div>
+            <div class="v" th:text="${q.note}">—</div>
+        </div>
+    </div>
+
+    <div class="actions">
+        <a href="/products" class="btn-ghost"><i class="bi bi-grid-3x3-gap-fill"></i> Ürünlere Dön</a>
+        <a href="/orders" class="btn-ghost"><i class="bi bi-box-seam"></i> Siparişlerim</a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Anasayfa | Deniz Çelik Halat</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Saira+Condensed:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="preload" href="/uploads/wire_tow_rope_2.glb" as="fetch" crossorigin="anonymous">
+
+    <style>
+        :root{
+            --ink:#050506; --panel:rgba(14,14,16,.74); --line:rgba(255,215,0,.22);
+            --gold:#FFD700; --gold-2:#E9C200; --text:#ECECEC; --muted:#9a9a9a;
+            --f-display:'Saira Condensed',system-ui,sans-serif;
+            --f-body:'Inter',system-ui,sans-serif;
+            --f-mono:'JetBrains Mono',ui-monospace,monospace;
+        }
+        *{box-sizing:border-box}
+        html{scroll-behavior:smooth}
+        body{
+            margin:0; min-height:100vh; overflow-x:hidden; color:var(--text); font-family:var(--f-body);
+            background:linear-gradient(180deg, rgba(4,5,7,.55), rgba(4,5,7,.8)), url('/uploads/Background.png') no-repeat center center;
+            background-size:cover;
+        }
+
+        /* ============ ORTAK NAVBAR ============ */
+        .site-nav{z-index:1050; background:rgba(0,0,0,.86); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:.45rem 0}
+        .site-nav .navbar-brand{padding:0; margin-right:1rem}
+        .brand-logo{height:52px; width:auto; filter:drop-shadow(0 0 10px rgba(255,215,0,.28))}
+        .navbar-toggler{border:1px solid var(--line); padding:.3rem .55rem; border-radius:8px}
+        .navbar-toggler:focus{box-shadow:0 0 0 .18rem rgba(255,215,0,.3)}
+        .navbar-toggler i{color:var(--gold); font-size:1.5rem; line-height:1}
+        .main-links{gap:.15rem}
+        .nav-link{color:#e9e9e9 !important; font-weight:500; display:flex; align-items:center; gap:8px; padding:.5rem .95rem !important; border-radius:8px; transition:.22s}
+        .nav-link i{color:var(--gold); font-size:1rem}
+        .nav-link:hover{color:#fff !important; background:rgba(255,215,0,.08)}
+        .nav-link.active{color:var(--gold) !important}
+        .nav-auth{display:flex; align-items:center; gap:10px}
+        .btn-nav-ghost{display:inline-flex; align-items:center; gap:7px; border:1.5px solid var(--line); color:var(--gold); padding:.5rem 1rem; border-radius:10px; text-decoration:none; font-weight:600; white-space:nowrap; transition:.22s}
+        .btn-nav-ghost:hover{border-color:var(--gold); background:rgba(255,215,0,.1); color:#fff}
+        .btn-nav-gold{display:inline-flex; align-items:center; gap:7px; background:linear-gradient(180deg,#FFE970,#FFD700 55%,#E9C200); color:#100d00; padding:.5rem 1.05rem; border-radius:10px; text-decoration:none; font-weight:700; white-space:nowrap; transition:.22s; box-shadow:0 6px 18px rgba(255,215,0,.22)}
+        .btn-nav-gold:hover{filter:brightness(1.06); box-shadow:0 10px 26px rgba(255,215,0,.4)}
+        .nav-shield{color:var(--gold); font-size:1.35rem; text-decoration:none; text-shadow:0 0 10px var(--gold); padding:.2rem .3rem; transition:.22s}
+        .nav-shield:hover{transform:translateY(-1px)}
+        @media (max-width:991px){
+            .navbar-collapse{background:rgba(8,8,10,.98); border:1px solid var(--line); border-radius:14px; margin-top:12px; padding:16px}
+            .nav-link{padding:.7rem .8rem !important}
+            .nav-auth{flex-wrap:wrap; margin-top:14px; padding-top:14px; border-top:1px dashed var(--line)}
+            .btn-nav-ghost,.btn-nav-gold{flex:1 1 auto; justify-content:center}
+        }
+
+        /* ============ HERO ============ */
+        .hero{
+            min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+            text-align:center; padding:120px 20px 70px;
+            background:linear-gradient(180deg, rgba(3,3,4,.5), rgba(3,3,4,.85)), url('/uploads/wallpaper.png') no-repeat center center;
+            background-size:cover;
+        }
+        .hero h1{
+            font-family:var(--f-display); font-weight:700; text-transform:uppercase; letter-spacing:.04em;
+            font-size:clamp(2.6rem,8vw,5rem); color:#fff; margin:0; line-height:1;
+            text-shadow:0 0 24px rgba(255,215,0,.4), 0 0 60px rgba(255,215,0,.2);
+        }
+        .hero-sub{color:#e7e7e7; font-size:clamp(1rem,2.5vw,1.25rem); margin-top:16px; max-width:620px; letter-spacing:.01em}
+        .hero-actions{display:flex; gap:34px; margin-top:52px; flex-wrap:wrap; justify-content:center}
+        .hero-link{display:flex; flex-direction:column; align-items:center; gap:12px; color:#fff; text-decoration:none; min-width:118px; transition:.25s}
+        .hero-ic{
+            width:88px; height:88px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+            font-size:2.4rem; color:var(--gold); border:1.5px solid var(--line); background:rgba(0,0,0,.4);
+            backdrop-filter:blur(6px); box-shadow:0 0 22px rgba(255,215,0,.2); transition:.25s;
+        }
+        .hero-link:hover .hero-ic{border-color:var(--gold); box-shadow:0 0 34px rgba(255,215,0,.55); transform:translateY(-4px)}
+        .hero-link span{font-weight:600; letter-spacing:.05em; text-transform:uppercase; font-size:.9rem}
+        @media (max-width:575px){ .hero-actions{gap:16px} .hero-ic{width:68px; height:68px; font-size:1.8rem} .hero-link{min-width:88px} }
+
+        /* ============ SECTIONS ============ */
+        .section{padding:72px 0; scroll-margin-top:80px}
+        /* Bölümlere özel arka planlar (üzerine okunaklılık için koyu degrade) */
+        #sektorler{background:linear-gradient(180deg, rgba(4,5,7,.62), rgba(4,5,7,.82)), url('/uploads/wp.png') no-repeat center center; background-size:cover}
+        #kategoriler{background:linear-gradient(180deg, rgba(4,5,7,.62), rgba(4,5,7,.82)), url('/uploads/wallpaper-categories.png') no-repeat center center; background-size:cover}
+        #markalarimiz-hakkimizda{background:linear-gradient(180deg, rgba(4,5,7,.62), rgba(4,5,7,.82)), url('/uploads/wallpaper-marka.png') no-repeat center center; background-size:cover}
+        .section-eyebrow{font-family:var(--f-mono); letter-spacing:.3em; text-transform:uppercase; color:var(--gold-2); font-size:.72rem; text-align:center}
+        .section-title{
+            font-family:var(--f-display); text-transform:uppercase; letter-spacing:.05em; font-weight:700;
+            font-size:clamp(1.8rem,4vw,2.8rem); color:#fff; text-align:center; margin:6px 0 0;
+            text-shadow:0 0 16px rgba(255,215,0,.3);
+        }
+        .section-rule{width:90px; height:3px; margin:16px auto 42px; background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+
+        /* Tile (sektör/kategori kartı) */
+        .tile{
+            position:relative; height:100%; display:flex; flex-direction:column; text-decoration:none; overflow:hidden;
+            background:var(--panel); backdrop-filter:blur(10px); border:1px solid var(--line); border-radius:16px;
+            box-shadow:0 16px 40px rgba(0,0,0,.45); transition:transform .3s, box-shadow .3s, border-color .3s;
+        }
+        .tile:hover{transform:translateY(-4px); border-color:rgba(255,215,0,.5); box-shadow:0 22px 54px rgba(255,215,0,.14)}
+        .tile-media{height:250px; overflow:hidden; background:#000}
+        .tile-media img{width:100%; height:100%; object-fit:cover; transition:transform .5s}
+        .tile:hover .tile-media img{transform:scale(1.07)}
+        .tile-body{padding:16px 18px 20px; flex:1; display:flex; flex-direction:column}
+        .tile-title{font-family:var(--f-display); text-transform:uppercase; letter-spacing:.03em; font-weight:700; font-size:1.25rem; color:var(--gold); margin:0 0 6px}
+        .tile-desc{color:#cfcfcf; font-size:.84rem; line-height:1.55; margin:0}
+        .tile-cta{display:inline-flex; align-items:center; gap:6px; color:#fff; font-weight:600; font-size:.84rem; margin-top:auto; padding-top:8px}
+        /* Kategoriler yönlendirme kutusu */
+        .tile-nav{align-items:center; justify-content:center; text-align:center; padding:40px 20px; min-height:330px}
+        .tile-nav i{font-size:3.4rem; color:var(--gold); filter:drop-shadow(0 0 14px rgba(255,215,0,.4)); margin-bottom:14px}
+
+        /* Hakkımızda */
+        .about-grid{display:grid; grid-template-columns:1fr 1fr; gap:22px; max-width:1100px; margin:0 auto; align-items:stretch}
+        .brand-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+        .brand-grid img{width:100%; height:180px; object-fit:cover; border-radius:12px; border:1px solid var(--line); box-shadow:0 0 16px rgba(255,215,0,.15)}
+        .press{border-radius:12px; overflow:hidden; border:1px solid var(--line); box-shadow:0 0 22px rgba(255,215,0,.2)}
+        .press img{width:100%; height:100%; min-height:376px; object-fit:cover; display:block}
+        .about-text{max-width:1000px; margin:34px auto 0; color:#dcdcdc; font-size:1.04rem; line-height:1.75; text-align:center}
+        .about-text + .about-text{margin-top:18px}
+        @media (max-width:900px){ .about-grid{grid-template-columns:1fr} .press img{min-height:240px} .brand-grid img{height:150px} }
+
+        /* ============ FOOTER ============ */
+        .site-footer{border-top:1px solid var(--line); background:rgba(0,0,0,.6); backdrop-filter:blur(8px); padding:46px 0 0}
+        .footer-inner{display:grid; grid-template-columns:1.2fr 1fr 1fr 1fr; gap:26px}
+        .footer-payments{margin-top:30px; padding-top:20px; border-top:1px dashed var(--line); display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap}
+        .pay-label{font-family:var(--f-mono); font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin-right:4px}
+        .pay-chip{display:inline-flex; align-items:center; gap:7px; padding:7px 14px; border-radius:9px; border:1px solid var(--line); background:rgba(255,215,0,.05); color:#e6e6e6; font-family:var(--f-mono); font-size:.78rem; font-weight:600}
+        .pay-chip i{color:var(--gold); font-size:1rem}
+        .f-logo{height:54px; margin-bottom:12px; filter:drop-shadow(0 0 8px rgba(255,215,0,.25))}
+        .site-footer p{color:var(--muted); font-size:.9rem; line-height:1.6; margin:0}
+        .f-col h4{font-family:var(--f-display); text-transform:uppercase; letter-spacing:.06em; color:var(--gold); font-size:1.05rem; margin:0 0 14px}
+        .f-col a{display:flex; align-items:center; gap:8px; color:#cfcfcf; text-decoration:none; font-size:.9rem; padding:5px 0; transition:.2s}
+        .f-col a i{color:var(--gold)} .f-col a:hover{color:#fff}
+        .footer-base{margin-top:38px; border-top:1px solid rgba(255,255,255,.06); text-align:center; padding:18px; color:#7a7a7a; font-size:.82rem; font-family:var(--f-mono)}
+        @media (max-width:767px){ .footer-inner{grid-template-columns:1fr; gap:24px; text-align:left} }
+
+        a:focus-visible,button:focus-visible{outline:2px solid var(--gold); outline-offset:3px}
+        @media (prefers-reduced-motion:reduce){*{transition:none!important; animation:none!important; scroll-behavior:auto!important}}
+    </style>
+
+    <!-- Google <model-viewer>: arka plandaki 3B çelik halat için -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+</head>
+<body>
+
+<!-- ===== ARKA PLAN 3B MODELİ — Sandviç katman: arka planların ÜSTÜNDE, içeriğin ALTINDA ===== -->
+<style>
+    /* Yalnızca KATMAN (z-index) ekler; mevcut konum/tasarım DEĞİŞMEZ.
+       Model arka planların üstünde (z-index:0), tüm içerik onun üstünde (z-index:1). */
+    #bg-rope{
+        position:fixed; inset:0; width:100vw; height:100vh;
+        z-index:0; opacity:.75; pointer-events:none;
+        background-color:transparent; --poster-color:transparent;
+    }
+    .hero > *{ position:relative; z-index:1; }
+    .section > .container{ position:relative; z-index:1; }
+    .site-footer > .container{ position:relative; z-index:1; }
+</style>
+
+<model-viewer
+        id="bg-rope"
+        src="/uploads/wire_tow_rope_2.glb"
+        orientation="90deg 0deg 45deg"
+        interaction-prompt="none"
+        environment-image="neutral"
+        shadow-intensity="0"
+        camera-orbit="0deg 90deg 7%"
+        min-camera-orbit="auto 90deg 7%"
+        max-camera-orbit="auto 90deg 7%"
+        field-of-view="15deg"
+        min-field-of-view="15deg"
+        max-field-of-view="15deg"
+        loading="eager"
+        style="position:fixed; top:-10vh; left:-90vh; width:100vw; height:120vh; z-index:0; opacity:0.4; pointer-events:none; background-color:transparent; transform: rotate(-15deg);">
+</model-viewer>
+
+<!-- ===== ORTAK NAVBAR ===== -->
+<nav class="navbar navbar-expand-lg fixed-top site-nav">
+    <div class="container">
+        <a class="navbar-brand" href="/"><img src="/uploads/deniz-logo.png" alt="Deniz Çelik Halat" class="brand-logo" /></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Menüyü aç/kapat">
+            <i class="bi bi-list"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav mx-lg-auto mb-2 mb-lg-0 main-links">
+                <li class="nav-item"><a class="nav-link" href="/"><i class="bi bi-house-fill"></i> Anasayfa</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/products"><i class="bi bi-grid-3x3-gap-fill"></i> Ürünler</a></li>
+                <li class="nav-item"><a class="nav-link" href="/cart"><i class="bi bi-cart-fill"></i> Sepetim</a></li>
+                <li class="nav-item"><a class="nav-link" href="/#markalarimiz-hakkimizda"><i class="bi bi-info-circle-fill"></i> Hakkımızda</a></li>
+            </ul>
+            <div class="nav-auth">
+                <a sec:authorize="hasRole('ADMIN')" href="/admin/orders" class="btn-nav-ghost"><i class="bi bi-clipboard-data"></i> Admin Siparişleri</a>
+                <a sec:authorize="hasRole('ADMIN')" href="/admin/quotes" class="btn-nav-ghost"><i class="bi bi-file-earmark-text"></i> Admin Teklifleri</a>
+                <!-- Giriş YAPILMADIYSA: Giriş Yap + Kayıt Ol -->
+                <a sec:authorize="!isAuthenticated()" href="/login" class="btn-nav-ghost"><i class="bi bi-box-arrow-in-right"></i> Giriş Yap</a>
+                <a sec:authorize="!isAuthenticated()" href="/register" class="btn-nav-gold"><i class="bi bi-person-plus-fill"></i> Kayıt Ol</a>
+
+                <!-- Giriş YAPILDIYSA: Siparişlerim + Çıkış Yap -->
+                <a sec:authorize="isAuthenticated()" href="/orders" class="btn-nav-gold"><i class="bi bi-box-seam"></i> Siparişlerim</a>
+                <a sec:authorize="isAuthenticated()" href="/my-quotes" class="btn-nav-ghost"><i class="bi bi-chat-left-text"></i> Tekliflerim</a>
+                <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" style="display:inline-flex; margin:0;">
+                    <button type="submit" class="btn-nav-ghost" style="background: transparent; cursor: pointer;"><i class="bi bi-box-arrow-right"></i> Çıkış Yap</button>
+                </form>
+
+                <a href="/login" class="nav-shield" title="Admin Girişi"><i class="bi bi-shield-lock"></i></a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<header class="hero">
+    <h1>Deniz Çelik Halat</h1>
+    <p class="hero-sub">Endüstriyel mukavemet, denizci hassasiyeti. Çelik halat, zincir ve kaldırma ekipmanlarında güvenilir çözüm ortağınız.</p>
+    <div class="hero-actions">
+        <a href="#sektorler" class="hero-link">
+            <span class="hero-ic"><i class="bi bi-arrow-down-circle-fill"></i></span>
+            <span>Sektörler</span>
+        </a>
+        <a href="/products" class="hero-link">
+            <span class="hero-ic"><i class="bi bi-search"></i></span>
+            <span>Ürünler</span>
+        </a>
+        <a href="#kategoriler" class="hero-link">
+            <span class="hero-ic"><i class="bi bi-list-ul"></i></span>
+            <span>Kategoriler</span>
+        </a>
+    </div>
+</header>
+
+<!-- ===== SEKTÖRLER ===== -->
+<section id="sektorler" class="section">
+    <div class="container">
+        <div class="section-eyebrow">Hizmet Alanları / Industries</div>
+        <h2 class="section-title">Sektörler</h2>
+        <div class="section-rule"></div>
+
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+            <div class="col" data-aos="fade-up">
+                <div class="tile">
+                    <div class="tile-media"><img src="/uploads/insaat.jpg" alt="İnşaat" /></div>
+                    <div class="tile-body">
+                        <h3 class="tile-title">İnşaat</h3>
+                        <p class="tile-desc">Kaliteli çelik halatlar ve kaldırma ekipmanları ile inşaat sahalarında güvenli, dayanıklı çözümler.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col" data-aos="fade-up">
+                <div class="tile">
+                    <div class="tile-media"><img src="/uploads/vinc.jpg" alt="Vinç Sistemleri" /></div>
+                    <div class="tile-body">
+                        <h3 class="tile-title">Vinç Sistemleri</h3>
+                        <p class="tile-desc">Yüksek taşıma kapasitesi ve güvenliği ön planda tutan, uzun ömürlü vinç çözümleri.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col" data-aos="fade-up">
+                <div class="tile">
+                    <div class="tile-media"><img src="/uploads/gemicilik.jpg" alt="Gemicilik" /></div>
+                    <div class="tile-body">
+                        <h3 class="tile-title">Gemicilik</h3>
+                        <p class="tile-desc">Deniz taşımacılığı için özel üretilmiş zincir ve halatlarla gemicilik sektöründe çözüm ortağı.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col" data-aos="fade-up">
+                <div class="tile">
+                    <div class="tile-media"><img src="/uploads/sanayicilik.jpg" alt="Sanayi" /></div>
+                    <div class="tile-body">
+                        <h3 class="tile-title">Sanayi</h3>
+                        <p class="tile-desc">Sanayiye özel çelik halatlar, zincirler ve kaldırma aksesuarlarıyla kesintisiz hizmet.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col" data-aos="fade-up">
+                <div class="tile">
+                    <div class="tile-media"><img src="/uploads/madencilik.jpg" alt="Madencilik" /></div>
+                    <div class="tile-body">
+                        <h3 class="tile-title">Madencilik</h3>
+                        <p class="tile-desc">Zorlu madencilik koşullarına dayanıklı çelik halat çözümleriyle güvenli operasyon.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col" data-aos="fade-up">
+                <a href="#kategoriler" class="tile tile-nav">
+                    <i class="bi bi-arrow-down-circle"></i>
+                    <h3 class="tile-title">Kategoriler</h3>
+                    <span class="tile-cta">Ürün gruplarını keşfet <i class="bi bi-arrow-right"></i></span>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== KATEGORİLER ===== -->
+<section id="kategoriler" class="section">
+    <div class="container">
+        <div class="section-eyebrow">Ürün Grupları / Categories</div>
+        <h2 class="section-title">Kategoriler</h2>
+        <div class="section-rule"></div>
+
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+            <div class="col" data-aos="fade-up">
+                <a href="/category/1150" class="tile">
+                    <div class="tile-media"><img src="/uploads/celik_halat.jpg" alt="Çelik Halat" /></div>
+                    <div class="tile-body"><h3 class="tile-title">Çelik Halat</h3><span class="tile-cta">İncele <i class="bi bi-arrow-right"></i></span></div>
+                </a>
+            </div>
+            <div class="col" data-aos="fade-up">
+                <a href="/category/1151" class="tile">
+                    <div class="tile-media"><img src="/uploads/zincir.webp" alt="Zincirler" /></div>
+                    <div class="tile-body"><h3 class="tile-title">Zincirler</h3><span class="tile-cta">İncele <i class="bi bi-arrow-right"></i></span></div>
+                </a>
+            </div>
+            <div class="col" data-aos="fade-up">
+                <a href="/category/1152" class="tile">
+                    <div class="tile-media"><img src="/uploads/kanca.jpg" alt="Bağlantı Elemanları" /></div>
+                    <div class="tile-body"><h3 class="tile-title">Bağlantı Elemanları</h3><span class="tile-cta">İncele <i class="bi bi-arrow-right"></i></span></div>
+                </a>
+            </div>
+            <div class="col" data-aos="fade-up">
+                <a href="/category/1153" class="tile">
+                    <div class="tile-media"><img src="/uploads/polyester.jpeg" alt="Polyester Sapan" /></div>
+                    <div class="tile-body"><h3 class="tile-title">Polyester Sapan</h3><span class="tile-cta">İncele <i class="bi bi-arrow-right"></i></span></div>
+                </a>
+            </div>
+            <div class="col" data-aos="fade-up">
+                <a href="/category/1154" class="tile">
+                    <div class="tile-media"><img src="/uploads/tel-halat.webp" alt="Kaldırma Ekipmanları" /></div>
+                    <div class="tile-body"><h3 class="tile-title">Kaldırma Ekipmanları</h3><span class="tile-cta">İncele <i class="bi bi-arrow-right"></i></span></div>
+                </a>
+            </div>
+            <div class="col" data-aos="fade-up">
+                <a href="/category/1156" class="tile">
+                    <div class="tile-media"><img src="/uploads/halat-sapan.jpg" alt="Çelik Halat Sapan" /></div>
+                    <div class="tile-body"><h3 class="tile-title">Çelik Halat Sapan</h3><span class="tile-cta">İncele <i class="bi bi-arrow-right"></i></span></div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== MARKALAR & HAKKIMIZDA ===== -->
+<section id="markalarimiz-hakkimizda" class="section">
+    <div class="container">
+        <div class="section-eyebrow">Kurumsal / Corporate</div>
+        <h2 class="section-title">Markalarımız & Hakkımızda</h2>
+        <div class="section-rule"></div>
+
+        <div class="about-grid" data-aos="fade-up">
+            <div class="brand-grid">
+                <img src="/uploads/marka-1.png" alt="Marka 1" />
+                <img src="/uploads/marka-2.jpg" alt="Marka 2" />
+                <img src="/uploads/marka-3.jpg" alt="Marka 3" />
+                <img src="/uploads/sertifika.jpg" alt="Sertifika" />
+            </div>
+            <div class="press"><img src="/uploads/press.jpg" alt="Press Makinası" /></div>
+        </div>
+
+        <p class="about-text">
+            Sektördeki iş tecrübesi ile “Kadir Karaman Deniz Çelik Halat” ticari unvanı ile kurulmuş olup, kurulduğu günden itibaren Çelik Halat, Bağlantı Elemanları, Kaldırma Ekipmanları ve İş Güvenliği malzemeleri ile sektöründe piyasanın önde gelen firmaları arasına girmeyi hedeflemiştir.
+        </p>
+        <p class="about-text">
+            Sahip olduğu Yenilikçi, Güvenilir, Dürüst, İlkeli, Müşteri Odaklı, Takım Ruhu ve Rekabetçi değerlerini koruyarak Türkiye genelinde bilinen bir marka olma yolunda emin adımlarla ilerlemektedir.
+        </p>
+        <p class="about-text">
+            Hizmet verdiğimiz sektörler; Vinç, Demir-Çelik, Denizcilik, Asansör, Balıkçılık, Otomotiv, Madencilik, Mimari, Teleferik, İnşaat, Gıda ve iş güvenliğine ihtiyaç duyulan her işletmeye hizmet vermeye hazırdır.
+        </p>
+    </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer">
+    <div class="container footer-inner">
+        <div class="f-brand">
+            <img src="/uploads/deniz-logo.png" alt="Deniz Çelik Halat" class="f-logo" />
+            <p>Endüstriyel çelik halat, zincir, sapan ve kaldırma ekipmanlarında güvenilir tedarik.</p>
+        </div>
+        <div class="f-col">
+            <h4>İletişim</h4>
+            <a href="https://maps.app.goo.gl/q5HHyXKietcfTcU89" target="_blank" rel="noopener noreferrer"><i class="bi bi-geo-alt-fill"></i> Bornova, İzmir</a>
+            <a href="mailto:info@denizcelikhalat.com"><i class="bi bi-envelope-fill"></i> info@denizcelikhalat.com</a>
+            <a href="tel:+902324567890"><i class="bi bi-telephone-fill"></i> +90 232 456 78 90</a>
+            <a href="tel:+902323758235"><i class="bi bi-telephone-fill"></i> +90 232 375 82 35</a>
+        </div>
+        <div class="f-col">
+            <h4>Hızlı Erişim</h4>
+            <a href="/products"><i class="bi bi-grid-3x3-gap-fill"></i> Ürünler</a>
+            <a href="/cart"><i class="bi bi-cart-fill"></i> Sepetim</a>
+            <a href="#markalarimiz-hakkimizda"><i class="bi bi-info-circle-fill"></i> Hakkımızda</a>
+        </div>
+        <div class="f-col">
+            <h4>Yasal</h4>
+            <a href="/mesafeli-satis-sozlesmesi"><i class="bi bi-file-earmark-text-fill"></i> Mesafeli Satış Sözleşmesi</a>
+            <a href="/teslimat-ve-iade"><i class="bi bi-truck"></i> Teslimat ve İade</a>
+            <a href="/gizlilik-politikasi"><i class="bi bi-shield-lock-fill"></i> Gizlilik Politikası</a>
+        </div>
+    </div>
+
+    <div class="footer-payments">
+        <span class="pay-label">Güvenli Ödeme</span>
+        <span class="pay-chip"><i class="bi bi-credit-card-2-front-fill"></i> VISA</span>
+        <span class="pay-chip"><i class="bi bi-credit-card-fill"></i> Mastercard</span>
+        <span class="pay-chip"><i class="bi bi-shield-lock-fill"></i> iyzico ile Güvenli Ödeme</span>
+    </div>
+    <div class="footer-base">© 2025 Deniz Çelik Halat — Tüm hakları saklıdır.</div>
+</footer>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    AOS.init({
+        duration: 600, once: true, offset: 120,
+        disable: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    });
+</script>
+
+<!-- Arka plandaki çelik halatın scroll ile Y ekseninde pürüzsüz dönüşü -->
+<script>
+    (function () {
+        var rope = document.getElementById('bg-rope');
+        if (!rope) return;
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        window.addEventListener('scroll', function() {
+            var y = window.scrollY || window.pageYOffset || 0;
+            var theta = y * 0.12;
+
+            // Zoom seviyesini HTML'deki gibi tam 10% değerine kilitledik!
+            rope.cameraOrbit = theta + 'deg 90deg 7%';
+        });
+    })();
+</script>
+</body>
+</html>

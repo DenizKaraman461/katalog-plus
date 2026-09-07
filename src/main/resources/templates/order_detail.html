@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sipariş Detayı | Deniz Çelik Halat</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Saira+Condensed:wght@500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        :root{
+            --ink:#050506; --panel:rgba(14,14,16,.74); --line:rgba(255,215,0,.22);
+            --gold:#FFD700; --gold-2:#E9C200; --text:#ECECEC; --muted:#9a9a9a;
+            --f-display:'Saira Condensed',system-ui,sans-serif;
+            --f-body:'Inter',system-ui,sans-serif; --f-mono:'JetBrains Mono',ui-monospace,monospace;
+        }
+        *{box-sizing:border-box}
+        body{margin:0; min-height:100vh; color:var(--text); font-family:var(--f-body); padding-top:104px;
+            background:linear-gradient(180deg, rgba(3,3,4,.9), rgba(3,3,4,.94)), url('/uploads/Background.png') no-repeat center center fixed; background-size:cover}
+        .site-nav{background:rgba(0,0,0,.86); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:.45rem 0}
+        .brand-logo{height:52px; width:auto; filter:drop-shadow(0 0 10px rgba(255,215,0,.28))}
+        .navbar-toggler{border:1px solid var(--line); padding:.3rem .55rem; border-radius:8px}
+        .navbar-toggler i{color:var(--gold); font-size:1.5rem; line-height:1}
+        .main-links{gap:.15rem}
+        .nav-link{color:#e9e9e9 !important; font-weight:500; display:flex; align-items:center; gap:8px; padding:.5rem .95rem !important; border-radius:8px}
+        .nav-link i{color:var(--gold); font-size:1rem}
+        .nav-link:hover{color:#fff !important; background:rgba(255,215,0,.08)}
+        .nav-auth{display:flex; align-items:center; gap:10px}
+        .btn-nav-ghost{display:inline-flex; align-items:center; gap:7px; border:1.5px solid var(--line); color:var(--gold); padding:.5rem 1rem; border-radius:10px; text-decoration:none; font-weight:600; white-space:nowrap}
+        .btn-nav-gold{display:inline-flex; align-items:center; gap:7px; background:linear-gradient(180deg,#FFE970,#FFD700 55%,#E9C200); color:#100d00; padding:.5rem 1.05rem; border-radius:10px; text-decoration:none; font-weight:700; white-space:nowrap}
+        @media (max-width:991px){
+            .navbar-collapse{background:rgba(8,8,10,.98); border:1px solid var(--line); border-radius:14px; margin-top:12px; padding:16px}
+            .nav-auth{flex-wrap:wrap; margin-top:14px; padding-top:14px; border-top:1px dashed var(--line)}
+            .btn-nav-ghost,.btn-nav-gold{flex:1 1 auto; justify-content:center}
+        }
+        .shell{max-width:980px; margin:0 auto; padding:24px 18px 70px}
+        .crumb{display:flex; align-items:center; gap:12px; margin-bottom:16px}
+        .crumb a{color:var(--muted); text-decoration:none; font-size:.86rem}
+        .crumb a:hover{color:var(--gold)}
+        .head-row{display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap; margin-bottom:22px}
+        .eyebrow{font-family:var(--f-mono); font-size:.72rem; letter-spacing:.3em; color:var(--gold-2); text-transform:uppercase; margin-bottom:6px}
+        .page-title{font-family:var(--f-display); font-weight:700; text-transform:uppercase; letter-spacing:.04em; font-size:2rem; color:#fff; margin:0; text-shadow:0 0 10px rgba(255,215,0,.4)}
+        .status-badge{font-family:var(--f-mono); font-size:.74rem; letter-spacing:.12em; text-transform:uppercase; padding:8px 14px; border-radius:999px; border:1px solid var(--line); color:var(--gold); background:rgba(255,215,0,.06); white-space:nowrap}
+
+        /* ===== Ödeme durumu banner'ı ===== */
+        .pay-banner{display:flex; align-items:center; gap:16px; flex-wrap:wrap; border-radius:16px; padding:18px 22px; margin-bottom:22px; border:1px solid; box-shadow:0 16px 40px rgba(0,0,0,.4)}
+        .pb-icon{font-size:1.8rem; flex:0 0 auto}
+        .pb-text{flex:1 1 260px; min-width:0}
+        .pb-title{font-family:var(--f-display); font-weight:700; text-transform:uppercase; letter-spacing:.04em; font-size:1.15rem; margin-bottom:2px}
+        .pb-sub{font-size:.88rem; color:#dcdcdc; line-height:1.5}
+        .pb-btn{display:inline-flex; align-items:center; gap:8px; padding:.68rem 1.3rem; border-radius:11px; font-weight:700; text-decoration:none; white-space:nowrap; flex:0 0 auto}
+
+        .pay-banner.ok{background:rgba(56,200,120,.1); border-color:rgba(56,200,120,.4)}
+        .pay-banner.ok .pb-icon{color:#56d68a}
+        .pay-banner.ok .pb-title{color:#8ff0b6}
+
+        .pay-banner.warn{background:rgba(255,180,0,.08); border-color:rgba(255,180,0,.4)}
+        .pay-banner.warn .pb-icon{color:#ffbf3d}
+        .pay-banner.warn .pb-title{color:#ffcf7a}
+        .pay-banner.warn .pb-btn{background:linear-gradient(180deg,#FFE970,#FFD700 55%,#E9C200); color:#100d00}
+
+        .pay-banner.bad{background:rgba(255,82,82,.1); border-color:rgba(255,82,82,.4)}
+        .pay-banner.bad .pb-icon{color:#ff6b6b}
+        .pay-banner.bad .pb-title{color:#ff9b9b}
+        .pay-banner.bad .pb-btn{background:linear-gradient(180deg,#FFE970,#FFD700 55%,#E9C200); color:#100d00}
+        @media (max-width:575px){ .pay-banner{padding:16px} .pb-btn{width:100%; justify-content:center} }
+        .panel{position:relative; background:var(--panel); backdrop-filter:blur(16px) saturate(120%); border:1px solid var(--line); border-radius:18px; padding:24px 26px; margin-bottom:22px; box-shadow:0 24px 60px rgba(0,0,0,.55)}
+        .section-label{font-family:var(--f-mono); font-size:.7rem; letter-spacing:.28em; text-transform:uppercase; color:var(--gold-2); margin-bottom:14px}
+        .info-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px 26px}
+        .info-row .k{font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; color:var(--muted)}
+        .info-row .v{color:#fff; margin-top:3px; white-space:pre-line}
+        .tbl{width:100%; border-collapse:collapse; font-size:.92rem}
+        .tbl thead th{font-family:var(--f-mono); font-size:.68rem; letter-spacing:.14em; text-transform:uppercase; color:var(--gold-2); text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); white-space:nowrap}
+        .tbl tbody td{padding:12px; border-bottom:1px dashed rgba(255,215,0,.14); vertical-align:top}
+        .tbl .num{font-family:var(--f-mono); text-align:right; white-space:nowrap}
+        .tbl .meas{font-family:var(--f-mono); font-size:.78rem; color:var(--muted)}
+        .grand{display:flex; justify-content:flex-end; align-items:baseline; gap:16px; margin-top:18px}
+        .grand .lbl{font-family:var(--f-display); text-transform:uppercase; letter-spacing:.05em; color:#fff; font-size:1.1rem}
+        .grand .amt{font-family:var(--f-mono); font-weight:700; font-size:1.6rem; color:var(--gold); text-shadow:0 0 14px rgba(255,215,0,.35)}
+        .actions{display:flex; gap:12px; flex-wrap:wrap; margin-top:6px}
+        .btn-gold{display:inline-flex; align-items:center; gap:8px; padding:.72rem 1.4rem; border-radius:11px; color:#100d00; text-decoration:none; font-weight:700; background:linear-gradient(180deg,#FFE970,#FFD700 55%,#E9C200)}
+        .btn-ghost{display:inline-flex; align-items:center; gap:8px; padding:.72rem 1.35rem; border:1.5px solid var(--line); border-radius:11px; color:#ddd; text-decoration:none; font-weight:600}
+        .btn-ghost:hover{border-color:#fff; color:#fff; background:rgba(255,255,255,.05)}
+        @media (max-width:575px){ .tbl thead{display:none} }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg fixed-top site-nav">
+    <div class="container">
+        <a class="navbar-brand" href="/"><img src="/uploads/deniz-logo.png" alt="Deniz Çelik Halat" class="brand-logo" /></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"><i class="bi bi-list"></i></button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav mx-lg-auto mb-2 mb-lg-0 main-links">
+                <li class="nav-item"><a class="nav-link" href="/"><i class="bi bi-house-fill"></i> Anasayfa</a></li>
+                <li class="nav-item"><a class="nav-link" href="/products"><i class="bi bi-grid-3x3-gap-fill"></i> Ürünler</a></li>
+                <li class="nav-item"><a class="nav-link" href="/cart"><i class="bi bi-cart-fill"></i> Sepetim</a></li>
+            </ul>
+            <div class="nav-auth">
+                <a sec:authorize="hasRole('ADMIN')" href="/admin/orders" class="btn-nav-ghost"><i class="bi bi-clipboard-data"></i> Admin Siparişleri</a>
+                <a sec:authorize="hasRole('ADMIN')" href="/admin/quotes" class="btn-nav-ghost"><i class="bi bi-file-earmark-text"></i> Admin Teklifleri</a>
+                <a href="/orders" class="btn-nav-gold"><i class="bi bi-box-seam"></i> Siparişlerim</a>
+                <a sec:authorize="isAuthenticated()" href="/my-quotes" class="btn-nav-ghost"><i class="bi bi-chat-left-text"></i> Tekliflerim</a>
+                <form th:action="@{/logout}" method="post" style="display:inline-flex; margin:0;">
+                    <button type="submit" class="btn-nav-ghost" style="background:transparent; cursor:pointer;"><i class="bi bi-box-arrow-right"></i> Çıkış</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="shell">
+
+    <div class="crumb"><a href="/orders"><i class="bi bi-arrow-left"></i> Siparişlerim</a></div>
+
+    <div class="head-row">
+        <div>
+            <div class="eyebrow">Sipariş Detayı</div>
+            <h1 class="page-title" th:text="'#DCH-' + ${order.id}">#DCH-0</h1>
+        </div>
+        <span class="status-badge" th:switch="${order.status.name()}">
+            <span th:case="'PENDING'">Bekliyor</span>
+            <span th:case="'PAID'">Ödendi</span>
+            <span th:case="'PREPARING'">Hazırlanıyor</span>
+            <span th:case="'SHIPPED'">Kargoya Verildi</span>
+            <span th:case="'DELIVERED'">Teslim Edildi</span>
+            <span th:case="'CANCELLED'">İptal Edildi</span>
+            <span th:case="*" th:text="${order.status}">—</span>
+        </span>
+    </div>
+
+    <!-- Ödeme Durumu Banner'ı -->
+    <div class="pay-banner ok" th:if="${order.paymentStatus.name() == 'PAID'}">
+        <div class="pb-icon"><i class="bi bi-check-circle-fill"></i></div>
+        <div class="pb-text">
+            <div class="pb-title">Sipariş Alındı</div>
+            <div class="pb-sub">Ödeme Tamamlandı<span th:if="${order.paidAt != null}" th:text="' · ' + ${#temporals.format(order.paidAt,'dd.MM.yyyy HH:mm')}"></span></div>
+            <div class="pb-sub" th:if="${order.paymentAmount != null}"
+                 th:text="'Kartla tahsil edilen tutar: ' + ${#numbers.formatDecimal(order.paymentAmount,1,'POINT',2,'COMMA')} + ' TL'">Kartla tahsil edilen tutar: 0,00 TL</div>
+        </div>
+    </div>
+
+    <div class="pay-banner warn" th:if="${order.paymentStatus.name() == 'PENDING'}">
+        <div class="pb-icon"><i class="bi bi-hourglass-split"></i></div>
+        <div class="pb-text">
+            <div class="pb-title">Ödeme Bekleniyor</div>
+            <div class="pb-sub">Sipariş oluşturuldu ancak ödeme henüz tamamlanmadı.</div>
+        </div>
+        <a th:href="@{'/checkout/pay/' + ${order.id}}" class="pb-btn"><i class="bi bi-credit-card-fill"></i> Ödemeye Devam Et</a>
+    </div>
+
+    <div class="pay-banner bad" th:if="${order.paymentStatus.name() == 'FAILED' or order.paymentStatus.name() == 'CANCELLED' or (order.status.name() == 'CANCELLED' and order.paymentStatus.name() != 'PAID')}">
+        <div class="pb-icon"><i class="bi bi-x-circle-fill"></i></div>
+        <div class="pb-text">
+            <div class="pb-title">Ödeme Başarısız / İptal Edildi</div>
+            <div class="pb-sub">Ödeme tamamlanamadı ya da sipariş iptal edildi. Kartınızdan tutar çekilmediyse endişelenmenize gerek yok.</div>
+        </div>
+        <a th:if="${order.status.name() != 'CANCELLED'}" th:href="@{'/checkout/pay/' + ${order.id}}" class="pb-btn"><i class="bi bi-arrow-repeat"></i> Ödemeyi Tekrar Dene</a>
+    </div>
+
+    <!-- Bilgiler -->
+    <div class="panel">
+        <div class="section-label">Sipariş Bilgileri</div>
+        <div class="info-grid">
+            <div class="info-row">
+                <div class="k">Tarih</div>
+                <div class="v" th:text="${order.orderDate != null} ? ${#temporals.format(order.orderDate,'dd.MM.yyyy HH:mm')} : '—'">—</div>
+            </div>
+            <div class="info-row">
+                <div class="k">Teslimat Adresi</div>
+                <div class="v" th:text="${order.deliveryAddress} ?: '—'">—</div>
+            </div>
+            <div class="info-row" th:if="${order.customerNote != null and !order.customerNote.isBlank()}">
+                <div class="k">Sipariş Notu</div>
+                <div class="v" th:text="${order.customerNote}">—</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kargo Bilgileri (AŞAMA 7A snapshot + AŞAMA 9 operasyon) — Order'a sipariş anında
+         yazılmış SNAPSHOT (tahmini ağırlık/ücret/kategori) ile admin'in siparişi fiilen
+         kargoya verirken girdiği OPERASYON (kargo firması/takip no/gönderim tarihi) bilgileri
+         burada KESİNLİKLE hesaplama yapılmadan gösterilir (ShippingService/ShippingCostService
+         çağrılmaz; yalnızca Order'daki hazır alanlar okunur). Eski siparişlerde tüm alanlar
+         null olabilir; bu durumda panel hiç gösterilmez. -->
+    <div class="panel" th:if="${order.shippingWeight != null or order.shippingCost != null or order.shippingCategory != null
+                                or order.shippingCompany != null or order.shippingTrackingNumber != null or order.shippedAt != null}">
+        <div class="section-label">Kargo Bilgileri</div>
+        <div class="info-grid">
+            <div class="info-row" th:if="${order.shippingWeight != null}">
+                <div class="k">Kargo Ağırlığı</div>
+                <div class="v" th:text="${#numbers.formatDecimal(order.shippingWeight,1,'POINT',2,'COMMA')} + ' kg'">—</div>
+            </div>
+            <div class="info-row" th:if="${order.shippingCategory != null}">
+                <div class="k">Kargo Tipi</div>
+                <div class="v" th:switch="${order.shippingCategory}">
+                    <span th:case="'STANDARD'">Standart Kargo</span>
+                    <span th:case="'HEAVY_CARGO'">Ağır Kargo</span>
+                    <span th:case="'MANUAL_REVIEW'">Manuel İnceleme Gerekli</span>
+                    <span th:case="*" th:text="${order.shippingCategory}">—</span>
+                </div>
+            </div>
+            <div class="info-row" th:if="${order.shippingCost != null}">
+                <div class="k">Kargo Ücreti</div>
+                <div class="v" th:text="${#numbers.formatDecimal(order.shippingCost,1,'POINT',2,'COMMA')} + ' TL'">—</div>
+            </div>
+            <div class="info-row" th:if="${order.shippingCost == null}">
+                <div class="k">Kargo Ücreti</div>
+                <div class="v">Kargo ücreti manuel olarak belirlenecektir.</div>
+            </div>
+            <div class="info-row" th:if="${order.shippingMessage != null and !order.shippingMessage.isBlank()}">
+                <div class="k">Not</div>
+                <div class="v" th:text="${order.shippingMessage}">—</div>
+            </div>
+
+            <!-- AŞAMA 9: Kargo OPERASYON bilgileri (admin'in siparişi fiilen kargoya
+                 verirken girdiği gerçek veri — snapshot'tan farklı, tahmini DEĞİL). -->
+            <div class="info-row">
+                <div class="k">Kargo Firması</div>
+                <div class="v" th:text="${order.shippingCompany} ?: 'Henüz kargoya verilmedi'">—</div>
+            </div>
+            <div class="info-row">
+                <div class="k">Takip Numarası</div>
+                <div class="v" th:text="${order.shippingTrackingNumber} ?: 'Henüz kargoya verilmedi'">—</div>
+            </div>
+            <div class="info-row">
+                <div class="k">Gönderim Tarihi</div>
+                <div class="v" th:text="${order.shippedAt != null} ? ${#temporals.format(order.shippedAt,'dd.MM.yyyy HH:mm')} : 'Henüz kargoya verilmedi'">—</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ürünler -->
+    <div class="panel">
+        <div class="section-label">Ürünler</div>
+        <table class="tbl">
+            <thead>
+                <tr>
+                    <th>Ürün</th>
+                    <th class="num">Adet</th>
+                    <th class="num">Birim Fiyat</th>
+                    <th class="num">Satır Toplamı</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="item : ${order.items}">
+                    <td>
+                        <div th:text="${item.product != null} ? ${item.product.name} : 'Ürün'">Ürün</div>
+                        <div class="meas" th:if="${item.selectedMeasurement != null and !item.selectedMeasurement.isEmpty()}"
+                             th:text="${item.measurementAmount != null and item.product != null and item.product.measurementMode != null and item.product.measurementMode.name() == 'PRESET_AMOUNT'}
+                                      ? |Ölçü: ${item.selectedMeasurement} · ${item.measurementAmount.stripTrailingZeros().toPlainString()}${item.product.measurementUnitLabel != null and !item.product.measurementUnitLabel.isEmpty() ? ' ' + item.product.measurementUnitLabel : ''}|
+                                      : 'Ölçü: ' + ${item.selectedMeasurement}">Ölçü: 5 metre</div>
+                    </td>
+                    <td class="num" th:text="${item.quantity}">1</td>
+                    <td class="num" th:text="${item.price != null} ? |${#numbers.formatDecimal(item.price,1,'POINT',2,'COMMA')} ${item.currencySnapshot != null ? item.currencySnapshot.symbol : (item.product != null and item.product.currency != null ? item.product.currency.symbol : '$')}| : '—'">0,00 $</td>
+                    <td class="num" th:text="${item.price != null} ? |${#numbers.formatDecimal(item.price * item.quantity,1,'POINT',2,'COMMA')} ${item.currencySnapshot != null ? item.currencySnapshot.symbol : (item.product != null and item.product.currency != null ? item.product.currency.symbol : '$')}| : '—'">0,00 $</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="grand" style="display:block;">
+            <span class="lbl" style="display:block; margin-bottom:10px;">Para Birimine Göre Toplamlar</span>
+            <div th:each="ct : ${order.totalsByCurrency}"
+                 style="display:flex; justify-content:flex-end; align-items:baseline; gap:16px; margin-top:6px;">
+                <span class="lbl" style="font-size:.95rem;" th:text="|${ct.key.label} Toplam|">EUR Toplam</span>
+                <span class="amt" th:text="|${#numbers.formatDecimal(ct.value,1,'POINT',2,'COMMA')} ${ct.key.symbol}|">0,00 €</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="actions">
+        <a href="/orders" class="btn-gold"><i class="bi bi-box-seam"></i> Siparişlerime Dön</a>
+        <a href="/products" class="btn-ghost"><i class="bi bi-grid-3x3-gap-fill"></i> Ürünlere Dön</a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

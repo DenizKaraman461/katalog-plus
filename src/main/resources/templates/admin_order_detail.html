@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title th:text="'Admin · #DCH-' + ${order.id} + ' | Deniz Çelik Halat'">Admin Sipariş Detayı</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Saira+Condensed:wght@500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        :root{
+            --ink:#050506; --panel:rgba(14,14,16,.74); --line:rgba(255,215,0,.22);
+            --gold:#FFD700; --gold-2:#E9C200; --text:#ECECEC; --muted:#9a9a9a; --ok:#7CFC9B; --danger:#ff8b8b;
+            --f-display:'Saira Condensed',system-ui,sans-serif;
+            --f-body:'Inter',system-ui,sans-serif; --f-mono:'JetBrains Mono',ui-monospace,monospace;
+        }
+        *{box-sizing:border-box}
+        body{margin:0; min-height:100vh; color:var(--text); font-family:var(--f-body); padding-top:104px;
+            background:linear-gradient(180deg, rgba(3,3,4,.9), rgba(3,3,4,.94)), url('/uploads/Background.png') no-repeat center center fixed; background-size:cover}
+        .site-nav{background:rgba(0,0,0,.86); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:.45rem 0}
+        .brand-logo{height:52px; width:auto; filter:drop-shadow(0 0 10px rgba(255,215,0,.28))}
+        .navbar-toggler{border:1px solid var(--line); padding:.3rem .55rem; border-radius:8px}
+        .navbar-toggler i{color:var(--gold); font-size:1.5rem; line-height:1}
+        .nav-link{color:#e9e9e9 !important; font-weight:500; display:flex; align-items:center; gap:8px; padding:.5rem .95rem !important; border-radius:8px}
+        .nav-link i{color:var(--gold)}
+        .nav-link:hover{color:#fff !important; background:rgba(255,215,0,.08)}
+        .nav-auth{display:flex; align-items:center; gap:10px}
+        .btn-nav-ghost{display:inline-flex; align-items:center; gap:7px; border:1.5px solid var(--line); color:var(--gold); padding:.5rem 1rem; border-radius:10px; text-decoration:none; font-weight:600}
+        .shell{max-width:1040px; margin:0 auto; padding:24px 18px 70px}
+        .crumb{display:flex; align-items:center; gap:12px; margin-bottom:16px}
+        .crumb a{color:var(--muted); text-decoration:none; font-size:.86rem}
+        .crumb a:hover{color:var(--gold)}
+        .head-row{display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap; margin-bottom:18px}
+        .eyebrow{font-family:var(--f-mono); font-size:.72rem; letter-spacing:.3em; color:var(--gold-2); text-transform:uppercase; margin-bottom:6px}
+        .page-title{font-family:var(--f-display); font-weight:700; text-transform:uppercase; letter-spacing:.04em; font-size:2rem; color:#fff; margin:0; text-shadow:0 0 10px rgba(255,215,0,.4)}
+        .alert-success{border:1px solid rgba(124,252,155,.45); background:rgba(124,252,155,.1); color:#aef0bf; border-radius:11px; padding:.8rem 1rem; margin-bottom:18px; font-size:.92rem}
+        .panel{position:relative; background:var(--panel); backdrop-filter:blur(16px) saturate(120%); border:1px solid var(--line); border-radius:18px; padding:24px 26px; margin-bottom:22px; box-shadow:0 24px 60px rgba(0,0,0,.55)}
+        .section-label{font-family:var(--f-mono); font-size:.7rem; letter-spacing:.28em; text-transform:uppercase; color:var(--gold-2); margin-bottom:14px}
+        .info-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px 26px}
+        .info-row .k{font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; color:var(--muted)}
+        .info-row .v{color:#fff; margin-top:3px; white-space:pre-line}
+        .flags{display:flex; gap:10px; flex-wrap:wrap; margin-top:4px}
+        .flag{font-family:var(--f-mono); font-size:.72rem; letter-spacing:.06em; padding:6px 12px; border-radius:999px; border:1px solid var(--line)}
+        .flag.ok{color:var(--ok); border-color:rgba(124,252,155,.4); background:rgba(124,252,155,.08)}
+        .flag.no{color:var(--danger); border-color:rgba(255,82,82,.4); background:rgba(255,82,82,.1)}
+        .tbl{width:100%; border-collapse:collapse; font-size:.92rem}
+        .tbl thead th{font-family:var(--f-mono); font-size:.68rem; letter-spacing:.14em; text-transform:uppercase; color:var(--gold-2); text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); white-space:nowrap}
+        .tbl tbody td{padding:12px; border-bottom:1px dashed rgba(255,215,0,.14); vertical-align:top}
+        .tbl .num{font-family:var(--f-mono); text-align:right; white-space:nowrap}
+        .tbl .meas{font-family:var(--f-mono); font-size:.78rem; color:var(--muted)}
+        .grand{display:flex; justify-content:flex-end; align-items:baseline; gap:16px; margin-top:18px}
+        .grand .lbl{font-family:var(--f-display); text-transform:uppercase; letter-spacing:.05em; color:#fff; font-size:1.1rem}
+        .grand .amt{font-family:var(--f-mono); font-weight:700; font-size:1.6rem; color:var(--gold); text-shadow:0 0 14px rgba(255,215,0,.35)}
+        .status-form{display:flex; gap:12px; flex-wrap:wrap; align-items:center}
+        .form-select{background:rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.12); color:#fff; border-radius:10px; padding:.6rem .9rem; min-width:200px}
+        .form-control{background:rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.12); color:#fff; border-radius:10px; padding:.6rem .9rem}
+        .form-control::placeholder{color:#6f6f6f}
+        .form-control:focus{outline:none; border-color:var(--gold); box-shadow:0 0 0 .15rem rgba(255,215,0,.16)}
+        .field-label{display:block; font-size:.7rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px}
+        .form-select:focus{outline:none; border-color:var(--gold); box-shadow:0 0 0 .15rem rgba(255,215,0,.16)}
+        .form-select option{background:#0c0c0e; color:#fff}
+        .btn-gold{display:inline-flex; align-items:center; gap:8px; padding:.66rem 1.3rem; border:none; border-radius:11px; cursor:pointer; color:#100d00; text-decoration:none; font-weight:700; background:linear-gradient(180deg,#FFE970,#FFD700 55%,#E9C200)}
+        .btn-ghost{display:inline-flex; align-items:center; gap:8px; padding:.66rem 1.3rem; border:1.5px solid var(--line); border-radius:11px; color:#ddd; text-decoration:none; font-weight:600}
+        .btn-ghost:hover{border-color:#fff; color:#fff; background:rgba(255,255,255,.05)}
+        .actions{display:flex; gap:12px; flex-wrap:wrap; margin-top:6px}
+        @media (max-width:575px){ .tbl thead{display:none} }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg fixed-top site-nav">
+    <div class="container">
+        <a class="navbar-brand" href="/"><img src="/uploads/deniz-logo.png" alt="Deniz Çelik Halat" class="brand-logo" /></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"><i class="bi bi-list"></i></button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav mx-lg-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" href="/admin/orders"><i class="bi bi-clipboard-data"></i> Siparişler</a></li>
+                <li class="nav-item"><a class="nav-link" href="/admin/quotes"><i class="bi bi-file-earmark-text"></i> Teklifler</a></li>
+                <li class="nav-item"><a class="nav-link" href="/products"><i class="bi bi-grid-3x3-gap-fill"></i> Ürünler</a></li>
+            </ul>
+            <div class="nav-auth">
+                <a sec:authorize="hasRole('ADMIN')" href="/admin/orders" class="btn-nav-ghost"><i class="bi bi-clipboard-data"></i> Admin Siparişleri</a>
+                <form th:action="@{/logout}" method="post" style="display:inline-flex; margin:0;">
+                    <button type="submit" class="btn-nav-ghost" style="background:transparent; cursor:pointer;"><i class="bi bi-box-arrow-right"></i> Çıkış</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="shell">
+
+    <div class="crumb"><a href="/admin/orders"><i class="bi bi-arrow-left"></i> Admin Siparişler</a></div>
+
+    <div class="head-row">
+        <div>
+            <div class="eyebrow">Admin · Sipariş Detayı</div>
+            <h1 class="page-title" th:text="'#DCH-' + ${order.id}">#DCH-0</h1>
+        </div>
+    </div>
+
+    <div class="alert-success" th:if="${success}" th:text="${success}">Tamam</div>
+
+    <!-- Müşteri & sipariş bilgileri -->
+    <div class="panel">
+        <div class="section-label">Müşteri & Sipariş Bilgileri</div>
+        <div class="info-grid">
+            <div class="info-row"><div class="k">Tarih</div>
+                <div class="v" th:text="${order.orderDate != null} ? ${#temporals.format(order.orderDate,'dd.MM.yyyy HH:mm')} : '—'">—</div></div>
+            <div class="info-row"><div class="k">Durum</div>
+                <div class="v" th:text="${order.status}">—</div></div>
+            <div class="info-row"><div class="k">Ödeme Durumu</div>
+                <div class="v" th:switch="${order.paymentStatus.name()}">
+                    <span th:case="'PAID'" style="color:#8ff0b6;">Ödendi</span>
+                    <span th:case="'PENDING'" style="color:#ffcf7a;">Ödeme Bekleniyor</span>
+                    <span th:case="'FAILED'" style="color:#ff9b9b;">Ödeme Başarısız</span>
+                    <span th:case="'CANCELLED'" style="color:#ff9b9b;">Ödeme İptal Edildi</span>
+                    <span th:case="*" th:text="${order.paymentStatus}">—</span>
+                    <span th:if="${order.paymentProvider != null}" th:text="' (' + ${order.paymentProvider} + ')'" style="color:var(--muted); font-size:.85em;"></span>
+                </div>
+            </div>
+            <div class="info-row" th:if="${order.paidAt != null}"><div class="k">Ödeme Tarihi</div>
+                <div class="v" th:text="${#temporals.format(order.paidAt,'dd.MM.yyyy HH:mm')}">—</div></div>
+            <div class="info-row" th:if="${order.paymentAmount != null}"><div class="k">Kartla Tahsil Edilen Tutar</div>
+                <div class="v" th:text="${#numbers.formatDecimal(order.paymentAmount,1,'POINT',2,'COMMA')} + ' ' + ${order.paymentCurrency}">—</div></div>
+            <div class="info-row" th:if="${order.paymentExchangeRateSource != null}"><div class="k">Kur Kaynağı</div>
+                <div class="v" th:text="${order.paymentExchangeRateSource}
+                        + (${order.paymentExchangeRateMarginPercent} != null ? ' (margin %' + ${order.paymentExchangeRateMarginPercent} + ')' : '')">—</div></div>
+            <div class="info-row" th:if="${order.paymentExchangeRateFetchedAt != null}"><div class="k">Kur Zamanı</div>
+                <div class="v" th:text="${#temporals.format(order.paymentExchangeRateFetchedAt,'dd.MM.yyyy HH:mm')}">—</div></div>
+            <div class="info-row"><div class="k">Ad Soyad</div>
+                <div class="v" th:text="${order.customerName} ?: '—'">—</div></div>
+            <div class="info-row"><div class="k">E-posta</div>
+                <div class="v" th:text="${order.customerEmail} ?: '—'">—</div></div>
+            <div class="info-row"><div class="k">Telefon</div>
+                <div class="v" th:text="${order.customerPhone} ?: '—'">—</div></div>
+            <div class="info-row"><div class="k">Teslimat Adresi</div>
+                <div class="v" th:text="${order.deliveryAddress} ?: '—'">—</div></div>
+            <div class="info-row" th:if="${order.customerNote != null and !order.customerNote.isBlank()}">
+                <div class="k">Sipariş Notu</div>
+                <div class="v" th:text="${order.customerNote}">—</div></div>
+        </div>
+
+        <div class="section-label" style="margin-top:18px;">Sözleşme Onayları</div>
+        <div class="flags">
+            <span class="flag" th:classappend="${order.preInfoAccepted} ? 'ok' : 'no'"
+                  th:text="(${order.preInfoAccepted} ? '✓ ' : '✕ ') + 'Ön Bilgilendirme'">Ön Bilgilendirme</span>
+            <span class="flag" th:classappend="${order.distanceSalesAccepted} ? 'ok' : 'no'"
+                  th:text="(${order.distanceSalesAccepted} ? '✓ ' : '✕ ') + 'Mesafeli Satış'">Mesafeli Satış</span>
+        </div>
+    </div>
+
+    <!-- Kargo Snapshot (AŞAMA 7A) — Order'a sipariş anında yazılmış SNAPSHOT gösterilir;
+         burada KESİNLİKLE hesaplama yapılmaz (ShippingService/ShippingCostService çağrılmaz).
+         Eski siparişlerde (tüm alanlar null) bu panel hiç gösterilmez. -->
+    <div class="panel"
+         th:if="${order.shippingWeight != null or order.shippingCost != null or order.shippingCategory != null or (order.shippingMessage != null and !order.shippingMessage.isBlank())}">
+        <div class="section-label">Kargo Snapshot</div>
+        <p style="margin:0 0 14px; font-size:.8rem; color:var(--muted); line-height:1.5;">
+            Bu bilgiler sipariş oluşturulduğu anda hesaplanan kargo bilgileridir.
+        </p>
+        <div class="info-grid">
+            <div class="info-row"><div class="k">Ağırlık</div>
+                <div class="v" th:text="${order.shippingWeight != null} ? (${#numbers.formatDecimal(order.shippingWeight,1,'POINT',2,'COMMA')} + ' kg') : '-'">—</div></div>
+            <div class="info-row"><div class="k">Kategori</div>
+                <div class="v" th:switch="${order.shippingCategory}">
+                    <span th:case="'STANDARD'">Standart Kargo (STANDARD)</span>
+                    <span th:case="'HEAVY_CARGO'">Ağır Kargo (HEAVY_CARGO)</span>
+                    <span th:case="'MANUAL_REVIEW'">Manuel İnceleme Gerekli (MANUAL_REVIEW)</span>
+                    <span th:case="*" th:text="${order.shippingCategory} ?: '-'">—</span>
+                </div>
+            </div>
+            <div class="info-row"><div class="k">Kargo Ücreti</div>
+                <div class="v" th:text="${order.shippingCost != null} ? (${#numbers.formatDecimal(order.shippingCost,1,'POINT',2,'COMMA')} + ' TL') : '-'">—</div></div>
+            <div class="info-row"><div class="k">Mesaj</div>
+                <div class="v" th:text="${order.shippingMessage != null and !order.shippingMessage.isBlank()} ? ${order.shippingMessage} : '-'">-</div></div>
+        </div>
+    </div>
+
+    <!-- Ürünler -->
+    <div class="panel">
+        <div class="section-label">Sipariş Kalemleri</div>
+        <table class="tbl">
+            <thead>
+                <tr>
+                    <th>Ürün</th>
+                    <th class="num">Adet</th>
+                    <th class="num">Birim Fiyat</th>
+                    <th class="num">Satır Toplamı</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="item : ${order.items}">
+                    <td>
+                        <div th:text="${item.product != null} ? ${item.product.name} : 'Ürün'">Ürün</div>
+                        <div class="meas" th:if="${item.selectedMeasurement != null and !item.selectedMeasurement.isEmpty()}"
+                             th:text="${item.measurementAmount != null and item.product != null and item.product.measurementMode != null and item.product.measurementMode.name() == 'PRESET_AMOUNT'}
+                                      ? |Ölçü: ${item.selectedMeasurement} · ${item.measurementAmount.stripTrailingZeros().toPlainString()}${item.product.measurementUnitLabel != null and !item.product.measurementUnitLabel.isEmpty() ? ' ' + item.product.measurementUnitLabel : ''}|
+                                      : 'Ölçü: ' + ${item.selectedMeasurement}">Ölçü: 5 metre</div>
+                    </td>
+                    <td class="num" th:text="${item.quantity}">1</td>
+                    <td class="num" th:text="${item.price != null} ? |${#numbers.formatDecimal(item.price,1,'POINT',2,'COMMA')} ${item.currencySnapshot != null ? item.currencySnapshot.symbol : (item.product != null and item.product.currency != null ? item.product.currency.symbol : '$')}| : '—'">0,00 $</td>
+                    <td class="num" th:text="${item.price != null} ? |${#numbers.formatDecimal(item.price * item.quantity,1,'POINT',2,'COMMA')} ${item.currencySnapshot != null ? item.currencySnapshot.symbol : (item.product != null and item.product.currency != null ? item.product.currency.symbol : '$')}| : '—'">0,00 $</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="grand" style="display:block;">
+            <span class="lbl" style="display:block; margin-bottom:10px;">Para Birimine Göre Toplamlar</span>
+            <div th:each="ct : ${order.totalsByCurrency}"
+                 style="display:flex; justify-content:flex-end; align-items:baseline; gap:16px; margin-top:6px;">
+                <span class="lbl" style="font-size:.95rem;" th:text="|${ct.key.label} Toplam|">EUR Toplam</span>
+                <span class="amt" th:text="|${#numbers.formatDecimal(ct.value,1,'POINT',2,'COMMA')} ${ct.key.symbol}|">0,00 €</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kargo Operasyonu (AŞAMA 8) — admin siparişi FİİLEN kargoya verdiğinde doldurur.
+         AŞAMA 5'teki "Kargo Snapshot" panelinden (yukarıda, tahmini ağırlık/ücret) FARKLIDIR:
+         burada gerçek kargo firması/takip numarası/gönderim zamanı kaydedilir. Mail
+         entegrasyonu bilinçli olarak YOK (bkz. OrderService.markOrderAsShipped); ödeme
+         akışına (PaymentService/IyzicoClient) hiç dokunmaz. -->
+    <div class="panel">
+        <div class="section-label">Kargo Operasyonu</div>
+        <form th:action="@{'/admin/orders/' + ${order.id} + '/ship'}" method="post"
+              style="display:flex; gap:16px; flex-wrap:wrap; align-items:flex-end;">
+            <div>
+                <label class="field-label" for="shippingCompany">Kargo Firması</label>
+                <input type="text" id="shippingCompany" class="form-control" name="shippingCompany"
+                       th:value="${order.shippingCompany}" placeholder="Örn: Yurtiçi Kargo" style="min-width:200px;" />
+            </div>
+            <div>
+                <label class="field-label" for="shippingTrackingNumber">Takip Numarası</label>
+                <input type="text" id="shippingTrackingNumber" class="form-control" name="shippingTrackingNumber"
+                       th:value="${order.shippingTrackingNumber}" placeholder="Örn: 123456789" style="min-width:200px;" />
+            </div>
+            <div>
+                <label class="field-label">Gönderim Tarihi</label>
+                <input type="text" class="form-control" readonly style="min-width:220px; opacity:.7; cursor:not-allowed;"
+                       th:value="${order.shippedAt != null} ? ${#temporals.format(order.shippedAt,'dd.MM.yyyy HH:mm')} : 'Kargoya verildiğinde otomatik doldurulur'" />
+            </div>
+            <button type="submit" class="btn-gold"><i class="bi bi-truck"></i> Kargoya Ver</button>
+        </form>
+        <p th:if="${order.shippedAt != null}" style="margin:12px 0 0; font-size:.78rem; color:var(--muted);">
+            Bu sipariş <strong th:text="${#temporals.format(order.shippedAt,'dd.MM.yyyy HH:mm')}">—</strong> tarihinde
+            kargoya verildi olarak işaretlendi. Bilgileri düzeltip tekrar "Kargoya Ver" ile güncelleyebilirsiniz
+            (gönderim tarihi güncel zamanla yenilenir).
+        </p>
+    </div>
+
+    <!-- Durum güncelleme -->
+    <div class="panel">
+        <div class="section-label">Durum Güncelle</div>
+        <form class="status-form" th:action="@{'/admin/orders/' + ${order.id} + '/status'}" method="post">
+            <select class="form-select" name="status">
+                <option th:each="st : ${statuses}" th:value="${st}" th:text="${st}"
+                        th:selected="${st == order.status}"></option>
+            </select>
+            <button type="submit" class="btn-gold"><i class="bi bi-check-lg"></i> Güncelle</button>
+        </form>
+    </div>
+
+    <div class="actions">
+        <a href="/admin/orders" class="btn-ghost"><i class="bi bi-arrow-left"></i> Admin Siparişlerine Dön</a>
+        <a href="/products" class="btn-ghost"><i class="bi bi-grid-3x3-gap-fill"></i> Ürünlere Dön</a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

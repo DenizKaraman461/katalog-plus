@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="tr">
+<head><meta charset="UTF-8" /></head>
+<body>
+
+<!-- ======================================================================
+     KULLANIM:
+       <header th:replace="~{fragments/navbar :: navbar('home')}"></header>
+
+     active değerleri:
+       home, products, cart, about, quotes, orders, admin-orders, admin-quotes
+
+     Not:
+       Bootstrap JS/CSS ve Bootstrap Icons ilgili sayfada yüklü olmalı.
+       Eğer sayfa içeriği navbarın altına girerse ilgili sayfada body padding-top'u
+       yaklaşık 118px yapabilirsin.
+     ====================================================================== -->
+<header th:fragment="navbar(active)" class="dch-header fixed-top">
+
+    <style>
+        /* ===== İki katmanlı navbar (siyah/altın) — self-contained, dch- önekli ===== */
+        .dch-header{z-index:1050; position:fixed; top:0; left:0; right:0}
+
+        /* A) Üst bilgi barı */
+        .dch-topbar{background:rgba(0,0,0,.92); border-bottom:1px solid rgba(255,215,0,.14); font-family:'Inter',system-ui,sans-serif}
+        .dch-topbar-inner{display:flex; align-items:center; justify-content:space-between; gap:14px; padding:6px 0; min-height:30px; flex-wrap:nowrap}
+        .dch-tb-right{display:flex; align-items:center; gap:18px; flex-wrap:nowrap}
+        .dch-tb-item{display:inline-flex; align-items:center; gap:7px; color:#c9c9c9; text-decoration:none; font-size:.78rem; line-height:1.2; white-space:nowrap; transition:color .2s}
+        .dch-tb-item i{color:#FFD700; font-size:.85rem}
+        .dch-tb-item:hover{color:#fff}
+        .dch-tb-item.dch-tb-addr{min-width:0}
+        .dch-tb-item.dch-tb-addr span{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+
+        /* B) Ana navbar */
+        .dch-nav{background:rgba(0,0,0,.86); backdrop-filter:blur(12px); border-bottom:1px solid rgba(255,215,0,.22); padding:.4rem 0}
+        .dch-brand{padding:0; margin-right:1rem}
+        .dch-logo{height:48px; width:auto; filter:drop-shadow(0 0 10px rgba(255,215,0,.28))}
+        .dch-toggler{border:1px solid rgba(255,215,0,.22); padding:.3rem .55rem; border-radius:8px}
+        .dch-toggler:focus{box-shadow:0 0 0 .18rem rgba(255,215,0,.3)}
+        .dch-toggler i{color:#FFD700; font-size:1.5rem; line-height:1}
+        .dch-links{gap:.15rem}
+
+        .dch-link{position:relative; color:#e9e9e9 !important; font-weight:500; display:flex; align-items:center; gap:8px; padding:.5rem .95rem; border-radius:8px; text-decoration:none; transition:.22s}
+        .dch-link i{color:#FFD700; font-size:1rem}
+        .dch-link:hover{color:#fff !important; background:rgba(255,215,0,.08)}
+        /* Aktif efekt: altın yazı + arka plan glow + glowing underline */
+        .dch-link.is-active{color:#FFD700 !important; background:rgba(255,215,0,.10)}
+        .dch-link.is-active::after{content:""; position:absolute; left:14px; right:14px; bottom:3px; height:2px; background:linear-gradient(90deg, transparent, #FFD700, transparent); box-shadow:0 0 8px rgba(255,215,0,.85), 0 0 14px rgba(255,215,0,.5); border-radius:2px}
+
+        .dch-auth{display:flex; align-items:center; gap:10px}
+        .dch-logout{display:inline-flex; margin:0; padding:0}
+        .dch-btn-ghost{position:relative; display:inline-flex; align-items:center; gap:7px; border:1.5px solid rgba(255,215,0,.22); color:#FFD700; background:transparent; padding:.5rem 1rem; border-radius:10px; text-decoration:none; font-weight:600; white-space:nowrap; cursor:pointer; transition:.22s}
+        .dch-btn-ghost:hover{border-color:#FFD700; background:rgba(255,215,0,.1); color:#fff}
+        .dch-btn-gold{display:inline-flex; align-items:center; gap:7px; background:linear-gradient(180deg,#FFE970,#FFD700 55%,#E9C200); color:#100d00; padding:.5rem 1.05rem; border-radius:10px; text-decoration:none; font-weight:700; white-space:nowrap; transition:.22s; box-shadow:0 6px 18px rgba(255,215,0,.22)}
+        .dch-btn-gold:hover{filter:brightness(1.06); box-shadow:0 10px 26px rgba(255,215,0,.4)}
+        /* Aktif efekt: butonlarda altın çerçeve glow */
+        .dch-btn-ghost.is-active{border-color:#FFD700; color:#fff; background:rgba(255,215,0,.14); box-shadow:0 0 10px rgba(255,215,0,.35)}
+        .dch-btn-gold.is-active{box-shadow:0 0 0 2px rgba(255,233,112,.6), 0 8px 22px rgba(255,215,0,.45)}
+
+        a.dch-link:focus-visible, a.dch-btn-ghost:focus-visible, a.dch-btn-gold:focus-visible, button.dch-btn-ghost:focus-visible, .dch-toggler:focus-visible{outline:2px solid #FFD700; outline-offset:2px}
+
+        /* Responsive */
+        @media (max-width:767px){
+            .dch-tb-item.dch-tb-addr{display:none} /* mobilde adres gizlenir, taşma olmaz */
+            .dch-topbar-inner{justify-content:center}
+            .dch-tb-right{gap:14px}
+            .dch-tb-item{font-size:.74rem}
+        }
+        @media (max-width:991px){
+            #dchNav{background:rgba(8,8,10,.98); border:1px solid rgba(255,215,0,.22); border-radius:14px; margin-top:12px; padding:16px}
+            .dch-link{padding:.7rem .8rem}
+            .dch-link.is-active::after{left:10px; right:10px; bottom:6px}
+            .dch-auth{flex-wrap:wrap; margin-top:14px; padding-top:14px; border-top:1px dashed rgba(255,215,0,.22)}
+            .dch-btn-ghost,.dch-btn-gold,.dch-logout{flex:1 1 auto; justify-content:center}
+            .dch-logout .dch-btn-ghost{width:100%; justify-content:center}
+        }
+        @media (prefers-reduced-motion:reduce){.dch-header *{transition:none!important}}
+    </style>
+
+    <!-- A) ÜST BİLGİ BARI -->
+    <div class="dch-topbar">
+        <div class="container dch-topbar-inner">
+            <a class="dch-tb-item dch-tb-addr"
+               href="https://www.google.com/maps/search/?api=1&query=Evka+3+129%2F1+Sk+No+2%2FA+Bornova+İzmir"
+               target="_blank" rel="noopener">
+                <i class="bi bi-geo-alt-fill"></i>
+                <span>Evka 3, 129/1. Sk. NO:2/A, 35050 Bornova/İzmir</span>
+            </a>
+            <div class="dch-tb-right">
+                <a class="dch-tb-item" href="tel:+902324430681">
+                    <i class="bi bi-telephone-fill"></i><span>0232 443 06 81</span>
+                </a>
+                <a class="dch-tb-item" href="mailto:denizcelikhalat363@gmail.com">
+                    <i class="bi bi-envelope-fill"></i><span>info@denizcelikhalat.com</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- B) ANA NAVBAR -->
+    <nav class="navbar navbar-expand-lg dch-nav">
+        <div class="container">
+            <a class="navbar-brand dch-brand" href="/">
+                <img src="/uploads/deniz-logo.png" alt="Deniz Çelik Halat" class="dch-logo" />
+            </a>
+            <button class="navbar-toggler dch-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#dchNav" aria-controls="dchNav" aria-expanded="false" aria-label="Menüyü aç/kapat">
+                <i class="bi bi-list"></i>
+            </button>
+
+            <div class="collapse navbar-collapse" id="dchNav">
+                <ul class="navbar-nav mx-lg-auto mb-2 mb-lg-0 dch-links">
+                    <li class="nav-item">
+                        <a class="dch-link" th:classappend="${active == 'home'} ? ' is-active' : ''" href="/">
+                            <i class="bi bi-house-fill"></i> Anasayfa</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="dch-link" th:classappend="${active == 'products'} ? ' is-active' : ''" href="/products">
+                            <i class="bi bi-grid-3x3-gap-fill"></i> Ürünler</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="dch-link" th:classappend="${active == 'cart'} ? ' is-active' : ''" href="/cart">
+                            <i class="bi bi-cart-fill"></i> Sepetim</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="dch-link" th:classappend="${active == 'about'} ? ' is-active' : ''" href="/#markalarimiz-hakkimizda">
+                            <i class="bi bi-info-circle-fill"></i> Hakkımızda</a>
+                    </li>
+                </ul>
+
+                <div class="dch-auth">
+                    <!-- Sadece ADMIN -->
+                    <a sec:authorize="hasRole('ADMIN')" class="dch-btn-ghost"
+                       th:classappend="${active == 'admin-orders'} ? ' is-active' : ''" href="/admin/orders">
+                        <i class="bi bi-clipboard-data"></i> Admin Siparişleri</a>
+                    <a sec:authorize="hasRole('ADMIN')" class="dch-btn-ghost"
+                       th:classappend="${active == 'admin-quotes'} ? ' is-active' : ''" href="/admin/quotes">
+                        <i class="bi bi-file-earmark-text"></i> Admin Teklifleri</a>
+
+                    <!-- Sadece giriş yapmış kullanıcı -->
+                    <a sec:authorize="isAuthenticated()" class="dch-btn-ghost"
+                       th:classappend="${active == 'quotes'} ? ' is-active' : ''" href="/my-quotes">
+                        <i class="bi bi-chat-left-text"></i> Tekliflerim</a>
+                    <a sec:authorize="isAuthenticated()" class="dch-btn-gold"
+                       th:classappend="${active == 'orders'} ? ' is-active' : ''" href="/orders">
+                        <i class="bi bi-box-seam"></i> Siparişlerim</a>
+                    <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="dch-logout">
+                        <button type="submit" class="dch-btn-ghost"><i class="bi bi-box-arrow-right"></i> Çıkış Yap</button>
+                    </form>
+
+                    <!-- Sadece anonim kullanıcı -->
+                    <a sec:authorize="!isAuthenticated()" class="dch-btn-ghost" href="/login">
+                        <i class="bi bi-box-arrow-in-right"></i> Giriş Yap</a>
+                    <a sec:authorize="!isAuthenticated()" class="dch-btn-gold" href="/register">
+                        <i class="bi bi-person-plus-fill"></i> Kayıt Ol</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+
+</body>
+</html>

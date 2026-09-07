@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Üye Ol | Deniz Çelik Halat</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Saira+Condensed:wght@500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        :root{
+            --ink:#050506; --panel:rgba(14,14,16,.74); --panel-2:rgba(22,22,26,.55);
+            --line:rgba(255,215,0,.22); --gold:#FFD700; --gold-2:#E9C200; --gold-deep:#8a6d00;
+            --text:#ECECEC; --muted:#9a9a9a; --danger:#ff5252;
+            --f-display:'Saira Condensed',system-ui,sans-serif;
+            --f-body:'Inter',system-ui,sans-serif;
+            --f-mono:'JetBrains Mono',ui-monospace,monospace;
+        }
+        *{box-sizing:border-box}
+        body{
+            margin:0; min-height:100vh; color:var(--text); font-family:var(--f-body);
+            background:
+                linear-gradient(180deg, rgba(3,3,4,.86) 0%, rgba(3,3,4,.78) 50%, rgba(3,3,4,.92) 100%),
+                url('/uploads/wp.png') no-repeat center center fixed;
+            background-size:cover;
+            display:flex; flex-direction:column;
+        }
+
+        /* ===== ORTAK NAVBAR ===== */
+        .site-nav{z-index:1050; background:rgba(0,0,0,.86); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:.45rem 0}
+        .site-nav .navbar-brand{padding:0; margin-right:1rem}
+        .brand-logo{height:52px; width:auto; filter:drop-shadow(0 0 10px rgba(255,215,0,.28))}
+        .navbar-toggler{border:1px solid var(--line); padding:.3rem .55rem; border-radius:8px}
+        .navbar-toggler:focus{box-shadow:0 0 0 .18rem rgba(255,215,0,.3)}
+        .navbar-toggler i{color:var(--gold); font-size:1.5rem; line-height:1}
+        .main-links{gap:.15rem}
+        .nav-link{color:#e9e9e9 !important; font-weight:500; display:flex; align-items:center; gap:8px; padding:.5rem .95rem !important; border-radius:8px; transition:.22s}
+        .nav-link i{color:var(--gold); font-size:1rem}
+        .nav-link:hover{color:#fff !important; background:rgba(255,215,0,.08)}
+        .nav-link.active{color:var(--gold) !important}
+        .nav-auth{display:flex; align-items:center; gap:10px}
+        .btn-nav-ghost{display:inline-flex; align-items:center; gap:7px; border:1.5px solid var(--line); color:var(--gold); padding:.5rem 1rem; border-radius:10px; text-decoration:none; font-weight:600; white-space:nowrap; transition:.22s}
+        .btn-nav-ghost:hover{border-color:var(--gold); background:rgba(255,215,0,.1); color:#fff}
+        .btn-nav-gold{display:inline-flex; align-items:center; gap:7px; background:linear-gradient(180deg,#FFE970,#FFD700 55%,#E9C200); color:#100d00; padding:.5rem 1.05rem; border-radius:10px; text-decoration:none; font-weight:700; white-space:nowrap; transition:.22s; box-shadow:0 6px 18px rgba(255,215,0,.22)}
+        .btn-nav-gold:hover{filter:brightness(1.06); box-shadow:0 10px 26px rgba(255,215,0,.4)}
+        .nav-shield{color:var(--gold); font-size:1.35rem; text-decoration:none; text-shadow:0 0 10px var(--gold); padding:.2rem .3rem; transition:.22s}
+        .nav-shield:hover{transform:translateY(-1px)}
+        @media (max-width:991px){
+            .navbar-collapse{background:rgba(8,8,10,.98); border:1px solid var(--line); border-radius:14px; margin-top:12px; padding:16px}
+            .nav-link{padding:.7rem .8rem !important}
+            .nav-auth{flex-wrap:wrap; margin-top:14px; padding-top:14px; border-top:1px dashed var(--line)}
+            .btn-nav-ghost,.btn-nav-gold{flex:1 1 auto; justify-content:center}
+        }
+
+        /* ---------- Layout ---------- */
+        .auth-wrap{flex:1; display:flex; align-items:center; justify-content:center; padding:48px 16px}
+        .auth-card{
+            position:relative; width:100%; max-width:560px; padding:38px 40px 32px;
+            background:var(--panel); backdrop-filter:blur(16px) saturate(120%);
+            border:1px solid var(--line); border-radius:18px;
+            box-shadow:0 28px 70px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.04);
+        }
+        /* blueprint köşe braketleri (imza öğesi) */
+        .frame::before,.frame::after{
+            content:""; position:absolute; width:26px; height:26px; pointer-events:none;
+        }
+        .frame::before{top:12px; left:12px; border-top:2px solid var(--gold); border-left:2px solid var(--gold)}
+        .frame::after{bottom:12px; right:12px; border-bottom:2px solid var(--gold); border-right:2px solid var(--gold)}
+
+        .eyebrow{font-family:var(--f-mono); font-size:.72rem; letter-spacing:.32em; color:var(--gold-2); text-transform:uppercase; margin-bottom:6px}
+        .auth-title{
+            font-family:var(--f-display); font-weight:700; text-transform:uppercase; letter-spacing:.06em;
+            font-size:2.1rem; color:#fff; margin:0 0 4px;
+            text-shadow:0 0 10px rgba(255,215,0,.45), 0 0 26px rgba(255,215,0,.2);
+        }
+        .auth-sub{color:var(--muted); font-size:.92rem; margin-bottom:26px}
+
+        .form-label{font-size:.78rem; letter-spacing:.06em; text-transform:uppercase; color:#cdcdcd; margin-bottom:6px; font-weight:500}
+        .form-control{
+            background:rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.12); color:#fff;
+            border-radius:10px; padding:.7rem .9rem; transition:.25s;
+        }
+        .form-control::placeholder{color:#6f6f6f}
+        .form-control:focus{
+            background:rgba(0,0,0,.6); color:#fff; border-color:var(--gold);
+            box-shadow:0 0 0 .18rem rgba(255,215,0,.16), 0 0 18px rgba(255,215,0,.25);
+        }
+        textarea.form-control{resize:vertical; min-height:84px}
+
+        .pw-wrap{position:relative}
+        .pw-toggle{
+            position:absolute; right:10px; top:50%; transform:translateY(-50%);
+            background:none; border:none; color:#9a9a9a; cursor:pointer; padding:6px; transition:.2s;
+        }
+        .pw-toggle:hover{color:var(--gold)}
+
+        .btn-gold{
+            width:100%; margin-top:6px; padding:.8rem; border:none; border-radius:11px;
+            font-family:var(--f-display); font-weight:600; letter-spacing:.08em; text-transform:uppercase; font-size:1.05rem;
+            color:#100d00; background:linear-gradient(180deg,#FFE970,#FFD700 55%,#E9C200);
+            box-shadow:0 8px 26px rgba(255,215,0,.28); transition:transform .2s, box-shadow .2s, filter .2s;
+        }
+        .btn-gold:hover{transform:translateY(-2px); box-shadow:0 14px 36px rgba(255,215,0,.45); filter:brightness(1.05)}
+        .btn-gold:active{transform:translateY(0)}
+
+        .alt-line{text-align:center; margin-top:18px; color:var(--muted); font-size:.9rem}
+        .alt-line a{color:var(--gold); text-decoration:none; font-weight:600}
+        .alt-line a:hover{text-decoration:underline}
+
+        .flash{border-radius:10px; padding:.7rem .9rem; font-size:.9rem; margin-bottom:18px; display:flex; align-items:center; gap:8px}
+        .flash-err{background:rgba(255,82,82,.12); border:1px solid rgba(255,82,82,.4); color:#ff9b9b}
+        .flash-ok{background:rgba(56,200,120,.12); border:1px solid rgba(56,200,120,.4); color:#8ff0b6}
+
+        a:focus-visible,button:focus-visible,.form-control:focus-visible{outline:2px solid var(--gold); outline-offset:2px}
+        @media (prefers-reduced-motion:reduce){*{transition:none!important; animation:none!important}}
+        @media (max-width:575px){ .auth-card{padding:30px 22px} .auth-title{font-size:1.7rem} }
+    </style>
+</head>
+<body>
+
+<!-- ===== ORTAK NAVBAR ===== -->
+<nav class="navbar navbar-expand-lg fixed-top site-nav">
+    <div class="container">
+        <a class="navbar-brand" href="/"><img src="/uploads/deniz-logo.png" alt="Deniz Çelik Halat" class="brand-logo" /></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Menüyü aç/kapat">
+            <i class="bi bi-list"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav mx-lg-auto mb-2 mb-lg-0 main-links">
+                <li class="nav-item"><a class="nav-link" href="/"><i class="bi bi-house-fill"></i> Anasayfa</a></li>
+                <li class="nav-item"><a class="nav-link" href="/products"><i class="bi bi-grid-3x3-gap-fill"></i> Ürünler</a></li>
+                <li class="nav-item"><a class="nav-link" href="/cart"><i class="bi bi-cart-fill"></i> Sepetim</a></li>
+                <li class="nav-item"><a class="nav-link" href="/#markalarimiz-hakkimizda"><i class="bi bi-info-circle-fill"></i> Hakkımızda</a></li>
+            </ul>
+            <div class="nav-auth">
+                <a href="/login" class="btn-nav-ghost"><i class="bi bi-box-arrow-in-right"></i> Giriş Yap</a>
+                <a href="/register" class="btn-nav-gold"><i class="bi bi-person-plus-fill"></i> Kayıt Ol</a>
+                <a href="/login" class="nav-shield" title="Admin Girişi"><i class="bi bi-shield-lock"></i></a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Kayıt formu -->
+<div class="auth-wrap" style="padding-top:120px;">
+    <form th:action="@{/register}" th:object="${user}" method="post" class="auth-card frame" novalidate>
+
+        <div class="eyebrow">Üye Kaydı / Membership</div>
+        <h1 class="auth-title">Hesap Oluştur</h1>
+        <p class="auth-sub">Siparişlerinizi takip edin, sepetinizi her cihazdan görüntüleyin.</p>
+
+        <div class="flash flash-err" th:if="${error}">
+            <i class="bi bi-exclamation-octagon-fill"></i> <span th:text="${error}">Hata</span>
+        </div>
+        <div class="flash flash-ok" th:if="${success}">
+            <i class="bi bi-check-circle-fill"></i> <span th:text="${success}">Tamam</span>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label" for="firstName">Ad</label>
+                <input type="text" id="firstName" th:field="*{firstName}" class="form-control" placeholder="Adınız" required autofocus />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" for="lastName">Soyad</label>
+                <input type="text" id="lastName" th:field="*{lastName}" class="form-control" placeholder="Soyadınız" required />
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <label class="form-label" for="email">E-posta</label>
+            <input type="email" id="email" th:field="*{email}" class="form-control" placeholder="ornek@mail.com" required />
+        </div>
+
+        <div class="mt-3">
+            <label class="form-label" for="phone">Telefon</label>
+            <input type="tel" id="phone" th:field="*{phone}" class="form-control" placeholder="+90 5xx xxx xx xx" />
+        </div>
+
+        <div class="mt-3">
+            <label class="form-label" for="address">Adres</label>
+            <textarea id="address" th:field="*{address}" class="form-control" placeholder="Teslimat adresiniz"></textarea>
+        </div>
+
+        <div class="mt-3">
+            <label class="form-label" for="password">Şifre</label>
+            <div class="pw-wrap">
+                <input type="password" id="password" th:field="*{password}" class="form-control" placeholder="••••••••" required />
+                <button type="button" class="pw-toggle" onclick="togglePw()" aria-label="Şifreyi göster/gizle">
+                    <i class="bi bi-eye-fill" id="pwIcon"></i>
+                </button>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-gold mt-4">
+            <i class="bi bi-shield-check"></i> Üye Ol
+        </button>
+
+        <div class="alt-line">
+            Zaten hesabın var mı? <a href="/login">Giriş yap</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    function togglePw(){
+        var i = document.getElementById('password');
+        var ic = document.getElementById('pwIcon');
+        var show = i.type === 'password';
+        i.type = show ? 'text' : 'password';
+        ic.className = show ? 'bi bi-eye-slash-fill' : 'bi bi-eye-fill';
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

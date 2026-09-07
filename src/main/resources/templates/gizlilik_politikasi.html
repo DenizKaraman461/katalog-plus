@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gizlilik Politikası | Deniz Çelik Halat</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Saira+Condensed:wght@500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        :root{
+            --ink:#050506; --panel:rgba(14,14,16,.74); --line:rgba(255,215,0,.22);
+            --gold:#FFD700; --gold-2:#E9C200; --text:#ECECEC; --muted:#9a9a9a;
+            --f-display:'Saira Condensed',system-ui,sans-serif;
+            --f-body:'Inter',system-ui,sans-serif; --f-mono:'JetBrains Mono',ui-monospace,monospace;
+        }
+        *{box-sizing:border-box}
+        body{margin:0; min-height:100vh; color:var(--text); font-family:var(--f-body); padding-top:104px;
+            background:linear-gradient(180deg, rgba(3,3,4,.9), rgba(3,3,4,.94)), url('/uploads/Background.png') no-repeat center center fixed; background-size:cover}
+
+        .shell{max-width:900px; margin:0 auto; padding:24px 18px 70px}
+        .page-head{margin-bottom:22px}
+        .eyebrow{font-family:var(--f-mono); font-size:.72rem; letter-spacing:.3em; color:var(--gold-2); text-transform:uppercase; margin-bottom:6px}
+        .page-title{font-family:var(--f-display); font-weight:700; text-transform:uppercase; letter-spacing:.04em; font-size:2rem; color:#fff; margin:0; text-shadow:0 0 10px rgba(255,215,0,.4)}
+        .updated-at{font-family:var(--f-mono); font-size:.78rem; color:var(--muted); margin-top:8px}
+
+        .draft-notice{
+            display:flex; gap:12px; align-items:flex-start; background:rgba(255,180,0,.08); border:1px solid rgba(255,180,0,.4);
+            border-radius:12px; padding:16px 18px; margin-bottom:26px; color:#ffe3ad; font-size:.92rem; line-height:1.55;
+        }
+        .draft-notice i{font-size:1.3rem; color:#ffbf3d; flex:0 0 auto; margin-top:2px}
+
+        .legal-card{
+            background:var(--panel); backdrop-filter:blur(16px) saturate(120%); border:1px solid var(--line);
+            border-radius:16px; padding:30px 34px; box-shadow:0 20px 50px rgba(0,0,0,.5);
+        }
+        .legal-card h2{
+            font-family:var(--f-display); font-weight:700; text-transform:uppercase; letter-spacing:.03em;
+            font-size:1.25rem; color:var(--gold); margin:32px 0 12px; padding-bottom:8px; border-bottom:1px dashed var(--line);
+        }
+        .legal-card h2:first-of-type{margin-top:0}
+        .legal-card h3{font-family:var(--f-display); font-size:1.05rem; color:#fff; margin:18px 0 8px}
+        .legal-card p{color:#dcdcdc; line-height:1.7; font-size:.95rem; margin:0 0 12px}
+        .legal-card ul, .legal-card ol{color:#dcdcdc; line-height:1.7; font-size:.95rem; padding-left:22px; margin:0 0 14px}
+        .legal-card li{margin-bottom:6px}
+        .legal-card strong{color:#fff}
+        .legal-card table{width:100%; border-collapse:collapse; margin:10px 0 18px; font-size:.88rem}
+        .legal-card table th, .legal-card table td{border:1px solid var(--line); padding:9px 12px; text-align:left; color:#dcdcdc}
+        .legal-card table th{color:var(--gold); font-family:var(--f-mono); font-size:.76rem; letter-spacing:.06em; text-transform:uppercase; background:rgba(255,215,0,.05)}
+
+        .placeholder-box{
+            background:rgba(0,0,0,.4); border:1px dashed var(--line); border-radius:12px; padding:16px 18px; margin:14px 0 18px;
+        }
+        .placeholder-box .row-item{display:flex; gap:8px; font-family:var(--f-mono); font-size:.88rem; padding:4px 0; flex-wrap:wrap}
+        .placeholder-box .row-item .lbl{color:var(--gold-2); min-width:170px}
+        .placeholder-box .row-item .val{color:#ffcf7a}
+
+        @media (max-width:575px){ .legal-card{padding:22px 18px} .page-title{font-size:1.6rem} .placeholder-box .row-item .lbl{min-width:130px} .legal-card table{font-size:.78rem} }
+    </style>
+</head>
+<body>
+
+<header th:replace="~{fragments/navbar :: navbar('legal')}"></header>
+
+<div class="shell">
+
+    <div class="page-head">
+        <div class="eyebrow">Yasal Bilgilendirme</div>
+        <h1 class="page-title">Gizlilik Politikası</h1>
+        <div class="updated-at">Son güncelleme: [GG.AA.YYYY]</div>
+    </div>
+
+    <div class="draft-notice">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <div>
+            <strong>Bu metin hukuki bir TASLAKTIR.</strong> 6698 sayılı KVKK ve ilgili mevzuata tam uyum için
+            yayına almadan önce mutlaka bir hukuk danışmanına/avukata onaylatınız. Şirket bilgileri
+            placeholder olarak bırakılmıştır.
+        </div>
+    </div>
+
+    <div class="legal-card">
+
+        <h2>1. Taraflar / Veri Sorumlusu</h2>
+        <p>İşbu Gizlilik Politikası, 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca "Veri
+            Sorumlusu" sıfatıyla hareket eden aşağıdaki SATICI tarafından, internet sitesi ziyaretçileri ve
+            müşterileri ("Veri Sahibi/ALICI") aydınlatmak amacıyla hazırlanmıştır.</p>
+
+        <div class="placeholder-box">
+            <div class="row-item"><span class="lbl">Satıcı Ünvanı:</span><span class="val">[Satıcı Ünvanı]</span></div>
+            <div class="row-item"><span class="lbl">Adres:</span><span class="val">[Adres]</span></div>
+            <div class="row-item"><span class="lbl">Telefon:</span><span class="val">[Telefon]</span></div>
+            <div class="row-item"><span class="lbl">E-posta:</span><span class="val">[E-posta]</span></div>
+            <div class="row-item"><span class="lbl">MERSİS/Vergi No:</span><span class="val">[MERSİS/Vergi No]</span></div>
+            <div class="row-item"><span class="lbl">Vergi Dairesi:</span><span class="val">[Vergi Dairesi]</span></div>
+        </div>
+
+        <h2>2. İşlenen Kişisel Veriler / Ürün-Hizmet Kapsamı</h2>
+        <p>İnternet sitemiz üzerinden ürün/hizmet satın alma, teklif talebi oluşturma, üyelik ve iletişim
+            süreçleri kapsamında aşağıdaki kişisel veri kategorileri işlenebilir:</p>
+        <table>
+            <tr><th>Kategori</th><th>Örnek Veriler</th></tr>
+            <tr><td>Kimlik</td><td>Ad, soyad</td></tr>
+            <tr><td>İletişim</td><td>E-posta adresi, telefon numarası, teslimat/fatura adresi</td></tr>
+            <tr><td>Müşteri İşlem</td><td>Sipariş geçmişi, teklif talepleri, sepet içeriği, değerlendirme/puanlama</td></tr>
+            <tr><td>İşlem Güvenliği</td><td>Giriş kayıtları, IP adresi, çerez verileri</td></tr>
+            <tr><td>Finansal (Sınırlı)</td><td>Ödeme durumu, işlem tutarı ve para birimi (kart numarası/CVV
+                SATICI tarafından İŞLENMEZ/SAKLANMAZ — bkz. Madde 4)</td></tr>
+        </table>
+
+        <h2>3. İşleme Amaçları ve Hukuki Sebep</h2>
+        <ul>
+            <li>Sipariş/teklif taleplerinin alınması, sözleşmenin kurulması ve ifası (KVKK m.5/2-c).</li>
+            <li>Ödeme işlemlerinin ödeme kuruluşu aracılığıyla gerçekleştirilmesi (KVKK m.5/2-c).</li>
+            <li>Sipariş/teklif durumu hakkında müşteriye e-posta ile bilgilendirme yapılması (KVKK m.5/2-c,
+                meşru menfaat).</li>
+            <li>Üyelik oluşturulması, kimlik doğrulama ve hesap güvenliğinin sağlanması (KVKK m.5/2-c).</li>
+            <li>Yasal yükümlülüklerin (fatura, muhasebe, tüketici mevzuatı vb.) yerine getirilmesi
+                (KVKK m.5/2-ç).</li>
+            <li>Müşteri ilişkileri yönetimi ve hizmet kalitesinin artırılması (KVKK m.5/2-f, meşru menfaat).</li>
+        </ul>
+
+        <h2>4. Ödeme Verilerinin İşlenmesi ve Aktarımı</h2>
+        <p><strong>Kredi/banka kartı bilgileri (kart numarası, son kullanma tarihi, güvenlik kodu) SATICI
+            tarafından HİÇBİR ŞEKİLDE görülmez, işlenmez veya sunucularında saklanmaz.</strong> Ödeme işlemi,
+            ALICI'nın tarayıcısından doğrudan ödeme kuruluşu <strong>iyzico</strong>'nun (iyzi Ödeme ve
+            Elektronik Para Kuruluşu A.Ş.) güvenli, 3D Secure destekli ödeme sayfası üzerinden gerçekleştirilir.
+            SATICI yalnızca ödemenin sonucunu (başarılı/başarısız), işlem tutarını ve ödeme kuruluşunun ürettiği
+            işlem referansını (token/conversationId) sistemine kaydeder.</p>
+        <p>Bu kapsamda kişisel verileriniz, ödeme işleminin gerçekleştirilebilmesi amacıyla sınırlı olarak
+            iyzico ile paylaşılır. iyzico'nun kendi veri işleme süreçleri hakkında bilgi için iyzico'nun kendi
+            gizlilik politikasına başvurabilirsiniz.</p>
+
+        <h2>5. Kişisel Verilerin Aktarıldığı Taraflar</h2>
+        <ul>
+            <li><strong>Ödeme kuruluşu (iyzico):</strong> Ödeme işleminin gerçekleştirilmesi amacıyla.</li>
+            <li><strong>Kargo/lojistik firmaları:</strong> Sipariş teslimatının yapılabilmesi amacıyla (ad-soyad,
+                adres, telefon).</li>
+            <li><strong>E-posta/altyapı sağlayıcıları:</strong> Sipariş/teklif bildirimlerinin iletilmesi
+                amacıyla.</li>
+            <li><strong>Yetkili kamu kurum ve kuruluşları:</strong> Yasal yükümlülüklerin yerine getirilmesi
+                amacıyla, mevzuatın öngördüğü hallerde.</li>
+        </ul>
+
+        <h2>6. Çerezler (Cookies)</h2>
+        <p>İnternet sitemiz, oturum yönetimi (giriş yapmış kullanıcının kimliğinin doğrulanması, sepet
+            bilgisinin tutulması, CSRF/güvenlik token'ları) amacıyla zorunlu çerezler kullanmaktadır. Bu çerezler
+            sitenin temel işlevlerinin çalışması için gereklidir.</p>
+
+        <h2>7. Veri Sahibinin Hakları (KVKK m.11)</h2>
+        <p>KVKK'nın 11. maddesi uyarınca, veri sahibi olarak aşağıdaki haklara sahipsiniz:</p>
+        <ul>
+            <li>Kişisel verilerinizin işlenip işlenmediğini öğrenme,</li>
+            <li>İşlenmişse buna ilişkin bilgi talep etme,</li>
+            <li>İşlenme amacını ve amacına uygun kullanılıp kullanılmadığını öğrenme,</li>
+            <li>Yurt içinde/yurt dışında aktarıldığı üçüncü kişileri bilme,</li>
+            <li>Eksik/yanlış işlenmişse düzeltilmesini isteme,</li>
+            <li>KVKK'da öngörülen şartlar çerçevesinde silinmesini/yok edilmesini isteme,</li>
+            <li>Yukarıdaki işlemlerin, verilerin aktarıldığı üçüncü kişilere bildirilmesini isteme,</li>
+            <li>Otomatik sistemlerle analiz edilmesi sonucu aleyhinize bir sonuç ortaya çıkmasına itiraz etme,</li>
+            <li>Kanuna aykırı işlenme nedeniyle zarara uğramanız halinde zararın giderilmesini talep etme.</li>
+        </ul>
+        <p>Bu haklarınızı kullanmak için aşağıdaki iletişim bilgilerinden SATICI'ya yazılı olarak
+            başvurabilirsiniz.</p>
+
+        <h2>8. Veri Saklama Süresi</h2>
+        <p>Kişisel verileriniz, işleme amacının gerektirdiği süre ve ilgili mevzuatta (Türk Ticaret Kanunu,
+            Vergi Usul Kanunu, Tüketicinin Korunması Hakkında Kanun vb.) öngörülen zamanaşımı süreleri boyunca
+            saklanır; bu sürelerin sonunda silinir, yok edilir veya anonim hale getirilir.</p>
+
+        <h2>9. İletişim Bilgileri</h2>
+        <p>Gizlilik politikamız veya kişisel verilerinizin işlenmesiyle ilgili sorularınız için:</p>
+        <div class="placeholder-box">
+            <div class="row-item"><span class="lbl">Telefon:</span><span class="val">[Telefon]</span></div>
+            <div class="row-item"><span class="lbl">E-posta:</span><span class="val">[E-posta]</span></div>
+            <div class="row-item"><span class="lbl">Adres:</span><span class="val">[Adres]</span></div>
+        </div>
+
+        <h2>10. Politikada Yapılacak Değişiklikler</h2>
+        <p>SATICI, işbu Gizlilik Politikası'nı mevzuat değişiklikleri veya iş süreçlerindeki güncellemeler
+            doğrultusunda revize etme hakkını saklı tutar. Güncel politika her zaman bu sayfada yayınlanır.</p>
+
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

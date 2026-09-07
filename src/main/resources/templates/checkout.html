@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sipariş Onayı | Deniz Çelik Halat</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Saira+Condensed:wght@500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        :root{
+            --ink:#050506; --panel:rgba(14,14,16,.74); --line:rgba(255,215,0,.22);
+            --gold:#FFD700; --gold-2:#E9C200; --text:#ECECEC; --muted:#9a9a9a; --danger:#ff5252;
+            --f-display:'Saira Condensed',system-ui,sans-serif;
+            --f-body:'Inter',system-ui,sans-serif;
+            --f-mono:'JetBrains Mono',ui-monospace,monospace;
+        }
+        *{box-sizing:border-box}
+        body{
+            margin:0; min-height:100vh; color:var(--text); font-family:var(--f-body); padding-top:104px;
+            background:linear-gradient(180deg, rgba(3,3,4,.9), rgba(3,3,4,.94)), url('/uploads/Background.png') no-repeat center center fixed;
+            background-size:cover;
+        }
+        .site-nav{background:rgba(0,0,0,.86); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:.45rem 0}
+        .site-nav .navbar-brand{padding:0; margin-right:1rem}
+        .brand-logo{height:52px; width:auto; filter:drop-shadow(0 0 10px rgba(255,215,0,.28))}
+        .navbar-toggler{border:1px solid var(--line); padding:.3rem .55rem; border-radius:8px}
+        .navbar-toggler:focus{box-shadow:0 0 0 .18rem rgba(255,215,0,.3)}
+        .navbar-toggler i{color:var(--gold); font-size:1.5rem; line-height:1}
+        .main-links{gap:.15rem}
+        .nav-link{color:#e9e9e9 !important; font-weight:500; display:flex; align-items:center; gap:8px; padding:.5rem .95rem !important; border-radius:8px; transition:.22s}
+        .nav-link i{color:var(--gold); font-size:1rem}
+        .nav-link:hover{color:#fff !important; background:rgba(255,215,0,.08)}
+        .nav-link.active{color:var(--gold) !important}
+        .nav-auth{display:flex; align-items:center; gap:10px}
+        .btn-nav-ghost{display:inline-flex; align-items:center; gap:7px; border:1.5px solid var(--line); color:var(--gold); padding:.5rem 1rem; border-radius:10px; text-decoration:none; font-weight:600; white-space:nowrap; transition:.22s}
+        .btn-nav-ghost:hover{border-color:var(--gold); background:rgba(255,215,0,.1); color:#fff}
+        .btn-nav-gold{display:inline-flex; align-items:center; gap:7px; background:linear-gradient(180deg,#FFE970,#FFD700 55%,#E9C200); color:#100d00; padding:.5rem 1.05rem; border-radius:10px; text-decoration:none; font-weight:700; white-space:nowrap; transition:.22s; box-shadow:0 6px 18px rgba(255,215,0,.22)}
+        .btn-nav-gold:hover{filter:brightness(1.06); box-shadow:0 10px 26px rgba(255,215,0,.4)}
+        @media (max-width:991px){
+            .navbar-collapse{background:rgba(8,8,10,.98); border:1px solid var(--line); border-radius:14px; margin-top:12px; padding:16px}
+            .nav-link{padding:.7rem .8rem !important}
+            .nav-auth{flex-wrap:wrap; margin-top:14px; padding-top:14px; border-top:1px dashed var(--line)}
+            .btn-nav-ghost,.btn-nav-gold{flex:1 1 auto; justify-content:center}
+        }
+        .shell{max-width:1180px; margin:0 auto; padding:24px 18px 70px}
+        .page-head{margin-bottom:22px}
+        .eyebrow{font-family:var(--f-mono); font-size:.72rem; letter-spacing:.3em; color:var(--gold-2); text-transform:uppercase; margin-bottom:6px}
+        .page-title{font-family:var(--f-display); font-weight:700; text-transform:uppercase; letter-spacing:.05em; font-size:2.1rem; color:#fff; margin:0; text-shadow:0 0 10px rgba(255,215,0,.4), 0 0 26px rgba(255,215,0,.18)}
+        .layout{display:grid; grid-template-columns:1.5fr .95fr; gap:26px; align-items:start}
+        .panel{position:relative; background:var(--panel); backdrop-filter:blur(16px) saturate(120%); border:1px solid var(--line); border-radius:18px; padding:28px 30px; box-shadow:0 28px 70px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.04)}
+        .frame::before,.frame::after{content:""; position:absolute; width:24px; height:24px; pointer-events:none}
+        .frame::before{top:12px; left:12px; border-top:2px solid var(--gold); border-left:2px solid var(--gold)}
+        .frame::after{bottom:12px; right:12px; border-bottom:2px solid var(--gold); border-right:2px solid var(--gold)}
+        .section-label{font-family:var(--f-mono); font-size:.7rem; letter-spacing:.28em; text-transform:uppercase; color:var(--gold-2); margin-bottom:16px}
+        .form-label{font-size:.78rem; letter-spacing:.06em; text-transform:uppercase; color:#cdcdcd; margin-bottom:6px; font-weight:500; display:block}
+        .form-control{background:rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.12); color:#fff; border-radius:10px; padding:.7rem .9rem; transition:.25s; width:100%}
+        .form-control::placeholder{color:#6f6f6f}
+        .form-control:focus{background:rgba(0,0,0,.6); color:#fff; border-color:var(--gold); outline:none; box-shadow:0 0 0 .18rem rgba(255,215,0,.16), 0 0 18px rgba(255,215,0,.25)}
+        textarea.form-control{resize:vertical; min-height:84px}
+        .check-row{display:flex; align-items:flex-start; gap:10px; margin-top:14px}
+        .check-row input{width:18px; height:18px; margin-top:2px; accent-color:var(--gold); flex:0 0 auto}
+        .check-row label{color:#d9d9d9; font-size:.9rem; line-height:1.5}
+        .err-box{border:1px solid rgba(255,82,82,.5); background:rgba(255,82,82,.12); color:#ffb3b3; border-radius:12px; padding:14px 16px; margin-bottom:20px; font-size:.92rem}
+        .err-box ul{margin:0; padding-left:18px}
+        .err-box li{margin:2px 0}
+        .sum-item{display:flex; justify-content:space-between; gap:12px; padding:12px 0; border-bottom:1px dashed rgba(255,215,0,.16)}
+        .sum-item:last-of-type{border-bottom:none}
+        .si-name{font-weight:600; color:#fff}
+        .si-meta{font-family:var(--f-mono); font-size:.78rem; color:var(--muted); margin-top:3px}
+        .si-line{font-family:var(--f-mono); font-weight:700; color:#fff; white-space:nowrap}
+        .sum-divider{height:1px; background:linear-gradient(90deg, transparent, var(--line), transparent); margin:14px 0}
+        .grand{display:flex; justify-content:space-between; align-items:center; margin-top:6px}
+        .grand .lbl{font-family:var(--f-display); text-transform:uppercase; letter-spacing:.05em; color:#fff; font-size:1.1rem}
+        .grand .amt{font-family:var(--f-mono); font-weight:700; font-size:1.5rem; color:var(--gold); text-shadow:0 0 14px rgba(255,215,0,.35)}
+        .grand-total-box{background:linear-gradient(180deg, rgba(255,215,0,.1), rgba(255,215,0,.03)); border:1px solid rgba(255,215,0,.35); border-radius:14px; padding:16px 18px; margin-top:6px}
+        .grand-total-box .lbl{font-family:var(--f-display); text-transform:uppercase; letter-spacing:.06em; color:#fff; font-size:1.05rem; font-weight:700}
+        .grand-total-box .amt{font-family:var(--f-mono); font-weight:800; font-size:1.75rem; color:var(--gold); text-shadow:0 0 18px rgba(255,215,0,.45)}
+        .btn-submit{width:100%; margin-top:22px; padding:.95rem; border:none; border-radius:12px; cursor:pointer; font-family:var(--f-display); font-weight:600; letter-spacing:.08em; text-transform:uppercase; font-size:1.12rem; color:#100d00; background:linear-gradient(180deg,#FFE970,#FFD700 55%,#E9C200); box-shadow:0 10px 28px rgba(255,215,0,.3); transition:transform .2s, box-shadow .2s, filter .2s; display:flex; align-items:center; justify-content:center; gap:10px}
+        .btn-submit:hover{transform:translateY(-2px); box-shadow:0 16px 40px rgba(255,215,0,.5); filter:brightness(1.05)}
+        .checkout-pay-badges{display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:14px; padding-top:14px; border-top:1px dashed var(--line)}
+        .cpb-chip{display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:9px; border:1px solid var(--line); background:rgba(255,215,0,.05); color:#e6e6e6; font-family:var(--f-mono); font-size:.74rem; font-weight:600}
+        .cpb-chip i{color:var(--gold); font-size:.95rem}
+        .btn-back{display:inline-flex; align-items:center; gap:8px; margin-top:14px; color:var(--muted); text-decoration:none; font-size:.86rem}
+        .btn-back:hover{color:var(--gold)}
+        a:focus-visible,button:focus-visible,.form-control:focus-visible{outline:2px solid var(--gold); outline-offset:2px}
+        @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+        @media (max-width:991px){ .layout{grid-template-columns:1fr} }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg fixed-top site-nav">
+    <div class="container">
+        <a class="navbar-brand" href="/"><img src="/uploads/deniz-logo.png" alt="Deniz Çelik Halat" class="brand-logo" /></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Menüyü aç/kapat">
+            <i class="bi bi-list"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav mx-lg-auto mb-2 mb-lg-0 main-links">
+                <li class="nav-item"><a class="nav-link" href="/"><i class="bi bi-house-fill"></i> Anasayfa</a></li>
+                <li class="nav-item"><a class="nav-link" href="/products"><i class="bi bi-grid-3x3-gap-fill"></i> Ürünler</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/cart"><i class="bi bi-cart-fill"></i> Sepetim</a></li>
+                <li class="nav-item"><a class="nav-link" href="/#markalarimiz-hakkimizda"><i class="bi bi-info-circle-fill"></i> Hakkımızda</a></li>
+            </ul>
+            <div class="nav-auth">
+                <a sec:authorize="hasRole('ADMIN')" href="/admin/orders" class="btn-nav-ghost"><i class="bi bi-clipboard-data"></i> Admin Siparişleri</a>
+                <a sec:authorize="hasRole('ADMIN')" href="/admin/quotes" class="btn-nav-ghost"><i class="bi bi-file-earmark-text"></i> Admin Teklifleri</a>
+                <a href="/orders" class="btn-nav-gold"><i class="bi bi-box-seam"></i> Siparişlerim</a>
+                <a sec:authorize="isAuthenticated()" href="/my-quotes" class="btn-nav-ghost"><i class="bi bi-chat-left-text"></i> Tekliflerim</a>
+                <form th:action="@{/logout}" method="post" style="display:inline-flex; margin:0;">
+                    <button type="submit" class="btn-nav-ghost" style="background:transparent; cursor:pointer;"><i class="bi bi-box-arrow-right"></i> Çıkış Yap</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="shell">
+
+    <div class="page-head">
+        <div class="eyebrow">Ödeme / Checkout</div>
+        <h1 class="page-title">Sipariş Onayı</h1>
+    </div>
+
+    <div class="err-box" th:if="${errors != null and !errors.isEmpty()}">
+        <ul>
+            <li th:each="e : ${errors}" th:text="${e}">Hata</li>
+        </ul>
+    </div>
+
+    <form th:action="@{/checkout}" th:object="${checkoutForm}" method="post">
+        <div class="layout">
+
+            <div class="panel frame">
+                <div class="section-label">Teslimat & İletişim Bilgileri</div>
+
+                <div class="mb-3">
+                    <label for="customerName" class="form-label">Ad Soyad</label>
+                    <input type="text" class="form-control" id="customerName" th:field="*{customerName}" placeholder="Ad Soyad" required />
+                </div>
+
+                <div class="mb-3">
+                    <label for="customerPhone" class="form-label">Telefon</label>
+                    <input type="text" class="form-control" id="customerPhone" th:field="*{customerPhone}" placeholder="05xx xxx xx xx" required />
+                </div>
+
+                <!-- AŞAMA 10.1 (revize): TC Kimlik No alanı KALDIRILDI — müşteriden gereksiz
+                     kişisel veri istenmiyor. iyzico'nun zorunlu tuttuğu şehir bilgisi kalıyor. -->
+                <div class="mb-3">
+                    <label for="customerCity" class="form-label">Şehir</label>
+                    <input type="text" class="form-control" id="customerCity" th:field="*{customerCity}" placeholder="Örn: İzmir" required />
+                </div>
+
+                <div class="mb-3">
+                    <label for="deliveryAddress" class="form-label">Teslimat Adresi</label>
+                    <textarea class="form-control" id="deliveryAddress" th:field="*{deliveryAddress}" rows="3" placeholder="Açık adres" required></textarea>
+                </div>
+
+                <div class="mb-2">
+                    <label for="customerNote" class="form-label">Sipariş Notu (isteğe bağlı)</label>
+                    <textarea class="form-control" id="customerNote" th:field="*{customerNote}" rows="2" placeholder="Eklemek istediğiniz not"></textarea>
+                </div>
+
+                <div class="sum-divider"></div>
+
+                <div class="check-row">
+                    <input type="checkbox" id="preInfoAccepted" th:field="*{preInfoAccepted}" />
+                    <label for="preInfoAccepted">Ön bilgilendirme formunu okudum ve kabul ediyorum.</label>
+                </div>
+                <div class="check-row">
+                    <input type="checkbox" id="distanceSalesAccepted" th:field="*{distanceSalesAccepted}" />
+                    <label for="distanceSalesAccepted">Mesafeli satış sözleşmesini okudum ve kabul ediyorum.</label>
+                </div>
+
+                <a href="/cart" class="btn-back"><i class="bi bi-arrow-left"></i> Sepete dön</a>
+            </div>
+
+            <div class="panel frame">
+                <div class="section-label">Sipariş Özeti</div>
+
+                <div th:each="item : ${cart.items}" class="sum-item" th:with="cur=${item.currencySnapshot != null ? item.currencySnapshot.symbol : (item.product != null and item.product.currency != null ? item.product.currency.symbol : '$')}">
+                    <div>
+                        <div class="si-name" th:text="${item.product.name}">Ürün Adı</div>
+                        <div class="si-meta">
+                            <span th:if="${item.selectedMeasurement != null and !item.selectedMeasurement.isEmpty()}" th:text="|Ölçü: ${item.selectedMeasurement} · |">Ölçü: 5 metre · </span>
+                            <span th:if="${item.measurementAmount != null and item.product.measurementMode != null and item.product.measurementMode.name() == 'PRESET_AMOUNT'}"
+                                  th:text="|${item.measurementAmount.stripTrailingZeros().toPlainString()}${item.product.measurementUnitLabel != null and !item.product.measurementUnitLabel.isEmpty() ? ' ' + item.product.measurementUnitLabel : ''} · |">15 metre · </span>
+                            <span th:text="|Adet: ${item.quantity}|">Adet: 1</span>
+                            <span th:if="${item.unitPriceSnapshot != null}" th:text="| · Birim: ${#numbers.formatDecimal(item.unitPriceSnapshot,1,'POINT',2,'COMMA')} ${cur}|"> · Birim: 0,00 ${cur}</span>
+                        </div>
+                    </div>
+                    <div class="si-line" th:if="${item.unitPriceSnapshot != null}" th:text="|${#numbers.formatDecimal(item.unitPriceSnapshot * item.quantity,1,'POINT',2,'COMMA')} ${cur}|">0,00 ${cur}</div>
+                    <div class="si-line" th:unless="${item.unitPriceSnapshot != null}">—</div>
+                </div>
+
+                <div class="sum-divider"></div>
+
+                <!-- 2) Tahmini Kargo Ağırlığı -->
+                <div class="grand" style="display:block;" th:if="${shippingCalculation != null and shippingCalculation.weightCalculated}">
+                    <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+                        <span class="lbl" style="font-size:.95rem;">Tahmini Kargo Ağırlığı</span>
+                        <span class="amt" style="font-size:1.1rem;"
+                              th:text="${#numbers.formatDecimal(shippingCalculation.totalWeight,1,'POINT',2,'COMMA')} + ' kg'">0,00 kg</span>
+                    </div>
+                    <!-- Kargo tipi (STANDARD/HEAVY_CARGO/MANUAL_REVIEW) — küçük, ikincil bilgi -->
+                    <div th:if="${shippingCalculation.category != null}" style="display:flex; justify-content:flex-end; margin-top:2px;">
+                        <span th:switch="${shippingCalculation.category.name()}" style="font-size:.78rem;">
+                            <span th:case="'STANDARD'" style="color:#8ff0b6;" th:text="${shippingCalculation.categoryMessage}">Standart Kargo</span>
+                            <span th:case="'HEAVY_CARGO'" style="color:#ffcf7a;" th:text="${shippingCalculation.categoryMessage}">Ağır Kargo</span>
+                            <span th:case="*" style="color:var(--gold-2);" th:text="${shippingCalculation.categoryMessage}">Manuel İnceleme Gerekli</span>
+                        </span>
+                    </div>
+                </div>
+                <p th:if="${shippingCalculation != null and shippingCalculation.requiresManualReview}"
+                   style="margin:6px 0 0; font-size:.82rem; color:var(--gold-2);">
+                    <i class="bi bi-info-circle-fill"></i> Kargo ağırlığı manuel kontrol edilecek.
+                </p>
+
+                <div class="sum-divider"></div>
+
+                <!-- 3) Ürün toplamları — her para birimi AYRI satır + o para biriminin TRY
+                     karşılığı (yalnızca TRY'nin kendisi değilse). Sepette olmayan para birimleri
+                     zaten cart.totalsByCurrency'de yer almadığından hiç gösterilmez. Orijinal
+                     €/$/₺ gösterimi BOZULMAZ; TL karşılığı sadece ek bir bilgi ipucudur. -->
+                <div class="grand" style="display:block;">
+                    <div th:each="ct : ${cart.totalsByCurrency}" style="margin-top:6px;">
+                        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+                            <span class="lbl" style="font-size:.95rem;" th:text="|${ct.key.label} Toplam|">EUR Toplam</span>
+                            <span class="amt" style="font-size:1.15rem;" th:text="|${#numbers.formatDecimal(ct.value,1,'POINT',2,'COMMA')} ${ct.key.symbol}|">0,00 €</span>
+                        </div>
+                        <div th:if="${ct.key.name() != 'TRY' and productTryByCurrency != null and productTryByCurrency[ct.key] != null}"
+                             style="display:flex; justify-content:flex-end; margin-top:2px;">
+                            <span style="font-size:.82rem; color:var(--muted);"
+                                  th:text="|(~ ${#numbers.formatDecimal(productTryByCurrency[ct.key],1,'POINT',2,'COMMA')} TL)|">(~0,00 TL)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sum-divider"></div>
+
+                <!-- 4) Kargo Ücreti -->
+                <div class="grand" style="display:block;">
+                    <div th:if="${shippingCostResult != null and shippingCostResult.costCalculated}"
+                         style="display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+                        <span class="lbl" style="font-size:.95rem;">Kargo Ücreti</span>
+                        <span class="amt" style="font-size:1.15rem;" th:text="${#numbers.formatDecimal(shippingCostResult.shippingCost,1,'POINT',2,'COMMA')} + ' TL'">0,00 TL</span>
+                    </div>
+                    <div th:if="${shippingCostResult == null or !shippingCostResult.costCalculated}"
+                         style="display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+                        <span class="lbl" style="font-size:.95rem;">Kargo Ücreti</span>
+                        <span style="color:var(--gold-2); font-size:.88rem; text-align:right; max-width:220px;">
+                            Kargo ücreti manuel olarak belirlenecektir.
+                        </span>
+                    </div>
+                </div>
+
+                <div class="sum-divider"></div>
+
+                <!-- 5) ÖDENECEK TOPLAM — kur + kargo ücreti hesaplanabiliyorsa GERÇEK ödeme
+                     tutarı (TRY, tek büyük rakam) gösterilir; bu tutar ödeme sırasında iyzico'ya
+                     gönderilecek tutarla AYNI kaynaktan gelir (bkz.
+                     PaymentService.convertEachCurrencyToTry / buildCharge). Kur alınamıyorsa
+                     VEYA kargo ücreti henüz hesaplanamıyorsa (manuel inceleme), YANLIŞ/EKSİK bir
+                     rakam göstermek yerine mevcut orijinal para birimi bazlı listeye güvenli
+                     şekilde geri dönülür. -->
+                <div th:if="${tryGrandTotal != null}" class="grand-total-box">
+                    <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+                        <span class="lbl">Ödenecek Toplam</span>
+                        <span class="amt" th:text="|${#numbers.formatDecimal(tryGrandTotal,1,'POINT',2,'COMMA')} TL|">0,00 TL</span>
+                    </div>
+                </div>
+                <div th:if="${tryGrandTotal == null}" class="grand" style="display:block;">
+                    <span class="lbl" style="display:block; margin-bottom:10px;">Ödenecek Toplam</span>
+                    <div th:each="ct : ${cart.totalsByCurrency}"
+                         style="display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-top:6px;">
+                        <span class="lbl" style="font-size:.95rem;" th:text="|${ct.key.label} Toplam|">EUR Toplam</span>
+                        <span class="amt" th:text="|${#numbers.formatDecimal(ct.value,1,'POINT',2,'COMMA')} ${ct.key.symbol}|">0,00 €</span>
+                    </div>
+                    <p style="margin:8px 0 0; font-size:.78rem; color:var(--muted);">
+                        Kesin ödeme tutarı (kargo dahil, TL) bir sonraki adımda gösterilecektir.
+                    </p>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <i class="bi bi-credit-card-fill"></i> Kartla Öde
+                </button>
+                <p style="margin:10px 0 0; font-size:.78rem; color:var(--muted); text-align:center;">
+                    <i class="bi bi-shield-lock-fill"></i> Kart bilgileriniz sitemizde tutulmaz; ödeme sayfasına güvenli şekilde yönlendirilirsiniz.
+                </p>
+                <div class="checkout-pay-badges">
+                    <span class="cpb-chip"><i class="bi bi-credit-card-2-front-fill"></i> VISA</span>
+                    <span class="cpb-chip"><i class="bi bi-credit-card-fill"></i> Mastercard</span>
+                    <span class="cpb-chip"><i class="bi bi-shield-lock-fill"></i> iyzico ile Güvenli Ödeme</span>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

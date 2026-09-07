@@ -1,0 +1,102 @@
+<!--
+  Ortak footer fragment'i. Kullanım (sayfanın en altında, </body>'den önce):
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+  Self-contained: kendi CSS'i (dchf- önekli sınıflar + sabit altın renkler) fragment'in
+  içindedir, sayfanın kendi :root değişkenlerine bağlı değildir (fragments/navbar.html ile
+  aynı yaklaşım). Bootstrap Icons sayfada zaten yüklü olmalı.
+
+  Marka logosu notu: Visa / Mastercard / iyzico'nun resmi logo görselleri (telif/marka hakları
+  nedeniyle) buraya gömülmedi; bunun yerine ikon + metin rozetleri kullanıldı. Elinizde bu
+  markaların resmi marka kitlerinden indirilmiş logo dosyaları varsa, aşağıdaki
+  "PAYMENT-LOGO-SWAP" yorumundaki örneğe göre <img> ile değiştirebilirsiniz.
+-->
+<footer th:fragment="footer" class="dchf-footer" xmlns:th="">
+    <style>
+        .dchf-footer{
+            --dchf-ink:#050506; --dchf-line:rgba(255,215,0,.22); --dchf-gold:#FFD700; --dchf-gold-2:#E9C200;
+            --dchf-text:#ECECEC; --dchf-muted:#9a9a9a;
+            --dchf-f-display:'Saira Condensed',system-ui,sans-serif;
+            --dchf-f-body:'Inter',system-ui,sans-serif;
+            --dchf-f-mono:'JetBrains Mono',ui-monospace,monospace;
+            border-top:1px solid var(--dchf-line); background:rgba(0,0,0,.6); backdrop-filter:blur(8px);
+            padding:46px 0 0; font-family:var(--dchf-f-body); color:var(--dchf-text);
+        }
+        .dchf-footer .dchf-container{max-width:1140px; margin:0 auto; padding:0 18px}
+        .dchf-inner{display:grid; grid-template-columns:1.3fr 1fr 1fr 1fr; gap:30px}
+        .dchf-logo{height:54px; margin-bottom:12px; filter:drop-shadow(0 0 8px rgba(255,215,0,.25))}
+        .dchf-footer p{color:var(--dchf-muted); font-size:.9rem; line-height:1.6; margin:0}
+        .dchf-col h4{font-family:var(--dchf-f-display); text-transform:uppercase; letter-spacing:.06em; color:var(--dchf-gold); font-size:1.05rem; margin:0 0 14px}
+        .dchf-col a{display:flex; align-items:center; gap:8px; color:#cfcfcf; text-decoration:none; font-size:.9rem; padding:5px 0; transition:.2s}
+        .dchf-col a i{color:var(--dchf-gold)}
+        .dchf-col a:hover{color:#fff}
+
+        /* ---- Güvenli ödeme rozetleri ---- */
+        .dchf-payments{
+            margin-top:36px; padding-top:22px; border-top:1px dashed var(--dchf-line);
+            display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap;
+        }
+        .dchf-pay-label{font-family:var(--dchf-f-mono); font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--dchf-muted); margin-right:6px}
+        .dchf-pay-chip{
+            display:inline-flex; align-items:center; gap:7px; padding:7px 14px; border-radius:9px;
+            border:1px solid var(--dchf-line); background:rgba(255,215,0,.05); color:#e6e6e6;
+            font-family:var(--dchf-f-mono); font-size:.78rem; letter-spacing:.03em; font-weight:600;
+        }
+        .dchf-pay-chip i{color:var(--dchf-gold); font-size:1rem}
+        .dchf-pay-chip img{height:18px; width:auto; display:block}
+
+        .dchf-base{margin-top:28px; border-top:1px solid rgba(255,255,255,.06); text-align:center; padding:18px; color:#7a7a7a; font-size:.82rem; font-family:var(--dchf-f-mono)}
+
+        @media (max-width:991px){ .dchf-inner{grid-template-columns:1fr 1fr; gap:26px} }
+        @media (max-width:575px){ .dchf-inner{grid-template-columns:1fr; gap:24px; text-align:left} }
+        .dchf-payment-logo-band {
+        max-width: 520px;
+        width: 100%;
+        height: auto;
+        display: block;
+        object-fit: contain;
+        }
+    </style>
+
+    <div class="dchf-container">
+        <div class="dchf-inner">
+            <div class="dchf-col">
+                <img src="/uploads/deniz-logo.png" alt="Deniz Çelik Halat" class="dchf-logo" />
+                <p>Endüstriyel çelik halat, zincir, sapan ve kaldırma ekipmanlarında güvenilir tedarik.</p>
+            </div>
+            <div class="dchf-col">
+                <h4>İletişim</h4>
+                <a href="https://maps.app.goo.gl/q5HHyXKietcfTcU89" target="_blank" rel="noopener noreferrer"><i class="bi bi-geo-alt-fill"></i> Bornova, İzmir</a>
+                <a href="mailto:info@denizcelikhalat.com"><i class="bi bi-envelope-fill"></i> info@denizcelikhalat.com</a>
+                <a href="tel:+902324567890"><i class="bi bi-telephone-fill"></i> +90 232 456 78 90</a>
+            </div>
+            <div class="dchf-col">
+                <h4>Hızlı Erişim</h4>
+                <a href="/products"><i class="bi bi-grid-3x3-gap-fill"></i> Ürünler</a>
+                <a href="/cart"><i class="bi bi-cart-fill"></i> Sepetim</a>
+                <a href="/#markalarimiz-hakkimizda"><i class="bi bi-info-circle-fill"></i> Hakkımızda</a>
+            </div>
+            <div class="dchf-col">
+                <h4>Yasal</h4>
+                <a href="/mesafeli-satis-sozlesmesi"><i class="bi bi-file-earmark-text-fill"></i> Mesafeli Satış Sözleşmesi</a>
+                <a href="/teslimat-ve-iade"><i class="bi bi-truck"></i> Teslimat ve İade</a>
+                <a href="/gizlilik-politikasi"><i class="bi bi-shield-lock-fill"></i> Gizlilik Politikası</a>
+            </div>
+        </div>
+
+        <!-- ---- Güvenli ödeme rozetleri (Visa/Mastercard/iyzico) ----
+             PAYMENT-LOGO-SWAP: Resmi logo görselleriniz varsa (örn. /uploads/visa.png,
+             /uploads/mastercard.png, /uploads/iyzico-logo.png) her chip içindeki <i> ikonunu
+             şu şekilde bir <img> ile değiştirebilirsiniz:
+               <img src="/uploads/visa.png" alt="Visa" />
+        -->
+        <div class="dchf-payments">
+            <span class="dchf-pay-label">Güvenli Ödeme</span>
+            <img src="/uploads/payment-logos.png"
+                 alt="iyzico, Mastercard, Visa, American Express ve Troy ile güvenli ödeme"
+                 class="dchf-payment-logo-band">
+        </div>
+    </div>
+
+    <div class="dchf-base">© 2025 Deniz Çelik Halat — Tüm hakları saklıdır.</div>
+</footer>

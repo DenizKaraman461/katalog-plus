@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ürünler | Deniz Çelik Halat</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Saira+Condensed:wght@500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        :root{
+            --ink:#050506; --panel:rgba(14,14,16,.74); --line:rgba(255,215,0,.22);
+            --gold:#FFD700; --gold-2:#E9C200; --text:#ECECEC; --muted:#9a9a9a;
+            --f-display:'Saira Condensed',system-ui,sans-serif;
+            --f-body:'Inter',system-ui,sans-serif;
+            --f-mono:'JetBrains Mono',ui-monospace,monospace;
+        }
+        *{box-sizing:border-box}
+        body{
+            margin:0; min-height:100vh; color:var(--text); font-family:var(--f-body); padding-top:80px;
+            background:linear-gradient(180deg, rgba(4,5,7,.55), rgba(4,5,7,.8)), url('/uploads/Background.png') no-repeat center center;
+            background-size:cover;
+            display:flex; flex-direction:column;
+        }
+
+        /* ===== ORTAK NAVBAR ===== */
+        .site-nav{z-index:1050; background:rgba(0,0,0,.86); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:.45rem 0}
+        .site-nav .navbar-brand{padding:0; margin-right:1rem}
+        .brand-logo{height:52px; width:auto; filter:drop-shadow(0 0 10px rgba(255,215,0,.28))}
+        .navbar-toggler{border:1px solid var(--line); padding:.3rem .55rem; border-radius:8px}
+        .navbar-toggler:focus{box-shadow:0 0 0 .18rem rgba(255,215,0,.3)}
+        .navbar-toggler i{color:var(--gold); font-size:1.5rem; line-height:1}
+        .main-links{gap:.15rem}
+        .nav-link{color:#e9e9e9 !important; font-weight:500; display:flex; align-items:center; gap:8px; padding:.5rem .95rem !important; border-radius:8px; transition:.22s}
+        .nav-link i{color:var(--gold); font-size:1rem}
+        .nav-link:hover{color:#fff !important; background:rgba(255,215,0,.08)}
+        .nav-link.active{color:var(--gold) !important}
+        .nav-auth{display:flex; align-items:center; gap:10px}
+        .btn-nav-ghost{display:inline-flex; align-items:center; gap:7px; border:1.5px solid var(--line); color:var(--gold); padding:.5rem 1rem; border-radius:10px; text-decoration:none; font-weight:600; white-space:nowrap; transition:.22s}
+        .btn-nav-ghost:hover{border-color:var(--gold); background:rgba(255,215,0,.1); color:#fff}
+        .btn-nav-gold{display:inline-flex; align-items:center; gap:7px; background:linear-gradient(180deg,#FFE970,#FFD700 55%,#E9C200); color:#100d00; padding:.5rem 1.05rem; border-radius:10px; text-decoration:none; font-weight:700; white-space:nowrap; transition:.22s; box-shadow:0 6px 18px rgba(255,215,0,.22)}
+        .btn-nav-gold:hover{filter:brightness(1.06); box-shadow:0 10px 26px rgba(255,215,0,.4)}
+        .nav-shield{color:var(--gold); font-size:1.35rem; text-decoration:none; text-shadow:0 0 10px var(--gold); padding:.2rem .3rem; transition:.22s}
+        .nav-shield:hover{transform:translateY(-1px)}
+        @media (max-width:991px){
+            .navbar-collapse{background:rgba(8,8,10,.98); border:1px solid var(--line); border-radius:14px; margin-top:12px; padding:16px}
+            .nav-link{padding:.7rem .8rem !important}
+            .nav-auth{flex-wrap:wrap; margin-top:14px; padding-top:14px; border-top:1px dashed var(--line)}
+            .btn-nav-ghost,.btn-nav-gold{flex:1 1 auto; justify-content:center}
+        }
+
+        /* ===== Shell ===== */
+        .shell{flex:1; max-width:1280px; width:100%; margin:0 auto; padding:30px 18px 60px}
+        .page-head{margin-bottom:24px}
+        .eyebrow{font-family:var(--f-mono); font-size:.72rem; letter-spacing:.3em; text-transform:uppercase; color:var(--gold-2)}
+        .page-title{font-family:var(--f-display); font-weight:700; text-transform:uppercase; letter-spacing:.05em; font-size:clamp(2rem,4.5vw,3rem); margin:4px 0 0; color:#fff; text-shadow:0 0 14px rgba(255,215,0,.4)}
+
+        /* Kontrol paneli (kategori + arama) */
+        .control-panel{
+            background:var(--panel); backdrop-filter:blur(12px) saturate(120%); border:1px solid var(--line);
+            border-radius:16px; padding:20px; margin-bottom:30px; box-shadow:0 16px 40px rgba(0,0,0,.45);
+        }
+        .panel-label{display:flex; align-items:center; gap:10px; font-family:var(--f-mono); font-size:.72rem; letter-spacing:.22em; text-transform:uppercase; color:var(--gold-2); margin-bottom:14px}
+        .clear-filter{margin-left:auto; cursor:pointer; color:#ff6b6b; font-weight:700; font-size:1.3rem; line-height:1; transition:.2s}
+        .clear-filter:hover{color:#fff; text-shadow:0 0 10px rgba(255,107,107,.6)}
+
+        .cat-pills{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:18px}
+        .cat-pill{
+            flex:1 1 auto; text-align:center; min-width:120px; padding:9px 14px; border-radius:10px; text-decoration:none;
+            color:var(--gold); border:1px solid var(--line); background:rgba(255,215,0,.04); font-weight:600; font-size:.9rem; transition:.22s;
+        }
+        .cat-pill:hover{background:var(--gold); color:#100d00; box-shadow:0 0 18px rgba(255,215,0,.4); border-color:var(--gold)}
+
+        .search-row{display:flex; gap:10px; align-items:stretch}
+        .search-row input[type="search"]{
+            flex:1; background:rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.12); color:#fff; border-radius:10px;
+            padding:.7rem 1rem; font-size:1rem; transition:.25s;
+        }
+        .search-row input::placeholder{color:#777}
+        .search-row input:focus{outline:none; border-color:var(--gold); box-shadow:0 0 0 .15rem rgba(255,215,0,.16)}
+        .search-btn{
+            width:52px; border:none; border-radius:10px; cursor:pointer; color:#100d00; font-size:1.25rem;
+            background:linear-gradient(180deg,#FFE970,#FFD700 55%,#E9C200); display:flex; align-items:center; justify-content:center; transition:.2s;
+        }
+        .search-btn:hover{filter:brightness(1.06); box-shadow:0 6px 18px rgba(255,215,0,.4)}
+
+        .admin-add{display:inline-flex; align-items:center; gap:8px; margin-bottom:24px; padding:.6rem 1.1rem; border-radius:10px;
+            background:rgba(56,200,120,.12); border:1px solid rgba(56,200,120,.45); color:#8ff0b6; text-decoration:none; font-weight:600; transition:.22s}
+        .admin-add:hover{background:rgba(56,200,120,.22); color:#fff; box-shadow:0 0 16px rgba(56,200,120,.3)}
+
+        /* Ürün kartı */
+        .p-card{
+            display:flex; flex-direction:column; height:100%; text-decoration:none; overflow:hidden;
+            background:var(--panel); backdrop-filter:blur(10px); border:1px solid var(--line); border-radius:14px;
+            box-shadow:0 14px 36px rgba(0,0,0,.45); transition:transform .28s, box-shadow .28s, border-color .28s;
+        }
+        .p-card:hover{transform:translateY(-5px); border-color:rgba(255,215,0,.5); box-shadow:0 20px 48px rgba(255,215,0,.16)}
+        .p-media{height:210px; background:#000; overflow:hidden; display:flex; align-items:center; justify-content:center}
+        .p-media img{width:100%; height:100%; object-fit:cover; transition:transform .5s}
+        .p-card:hover .p-media img{transform:scale(1.07)}
+        .p-body{padding:14px 16px 16px; display:flex; flex-direction:column; flex:1}
+        .p-name{font-family:var(--f-display); text-transform:uppercase; letter-spacing:.02em; font-weight:600; font-size:1.08rem; color:#fff; margin:0 0 8px; line-height:1.2}
+        .p-cta{display:inline-flex; align-items:center; gap:6px; color:var(--gold); font-weight:600; font-size:.82rem; margin-top:auto}
+        .p-stock{display:inline-block; align-self:flex-start; font-family:var(--f-mono); font-size:.64rem; letter-spacing:.1em; text-transform:uppercase; padding:3px 9px; border-radius:999px; margin:0 0 10px}
+        .p-stock.in{color:#7CFC9B; border:1px solid rgba(124,252,155,.4); background:rgba(124,252,155,.08)}
+        .p-stock.out{color:#ff9b9b; border:1px solid rgba(255,82,82,.4); background:rgba(255,82,82,.1)}
+        @media (max-width:575px){ .p-media{height:160px} .p-name{font-size:.95rem} }
+
+        /* Pagination */
+        .pagination{gap:6px}
+        .pagination .page-link{color:var(--gold); background:rgba(255,215,0,.04); border:1px solid var(--line); border-radius:9px; font-weight:600; padding:.5rem .85rem; transition:.2s}
+        .pagination .page-link:hover{background:rgba(255,215,0,.15); color:#fff}
+        .pagination .page-item.active .page-link{background:var(--gold); color:#100d00; border-color:var(--gold)}
+        .pagination .page-item.disabled .page-link{color:#666; background:transparent; border-color:rgba(255,255,255,.08)}
+
+        /* Footer */
+        .site-footer{border-top:1px solid var(--line); background:rgba(0,0,0,.6); backdrop-filter:blur(8px); padding:46px 0 0}
+        .footer-inner{display:grid; grid-template-columns:1.2fr 1fr 1fr 1fr; gap:26px}
+        .footer-payments{margin-top:30px; padding-top:20px; border-top:1px dashed var(--line); display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap}
+        .pay-label{font-family:var(--f-mono); font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin-right:4px}
+        .pay-chip{display:inline-flex; align-items:center; gap:7px; padding:7px 14px; border-radius:9px; border:1px solid var(--line); background:rgba(255,215,0,.05); color:#e6e6e6; font-family:var(--f-mono); font-size:.78rem; font-weight:600}
+        .pay-chip i{color:var(--gold); font-size:1rem}
+        .f-logo{height:54px; margin-bottom:12px; filter:drop-shadow(0 0 8px rgba(255,215,0,.25))}
+        .site-footer p{color:var(--muted); font-size:.9rem; line-height:1.6; margin:0}
+        .f-col h4{font-family:var(--f-display); text-transform:uppercase; letter-spacing:.06em; color:var(--gold); font-size:1.05rem; margin:0 0 14px}
+        .f-col a{display:flex; align-items:center; gap:8px; color:#cfcfcf; text-decoration:none; font-size:.9rem; padding:5px 0; transition:.2s}
+        .f-col a i{color:var(--gold)} .f-col a:hover{color:#fff}
+        .footer-base{margin-top:38px; border-top:1px solid rgba(255,255,255,.06); text-align:center; padding:18px; color:#7a7a7a; font-size:.82rem; font-family:var(--f-mono)}
+        @media (max-width:767px){ .footer-inner{grid-template-columns:1fr; gap:24px} }
+
+        a:focus-visible,button:focus-visible{outline:2px solid var(--gold); outline-offset:3px}
+        @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+        .footer-payment-logo-band {
+    max-width: 520px;
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+}
+    </style>
+</head>
+<body>
+
+<!-- ===== ORTAK NAVBAR ===== -->
+<nav class="navbar navbar-expand-lg fixed-top site-nav">
+    <div class="container">
+        <a class="navbar-brand" href="/"><img src="/uploads/deniz-logo.png" alt="Deniz Çelik Halat" class="brand-logo" /></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Menüyü aç/kapat">
+            <i class="bi bi-list"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav mx-lg-auto mb-2 mb-lg-0 main-links">
+                <li class="nav-item"><a class="nav-link" href="/"><i class="bi bi-house-fill"></i> Anasayfa</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/products"><i class="bi bi-grid-3x3-gap-fill"></i> Ürünler</a></li>
+                <li class="nav-item"><a class="nav-link" href="/cart"><i class="bi bi-cart-fill"></i> Sepetim</a></li>
+                <li class="nav-item"><a class="nav-link" href="/#markalarimiz-hakkimizda"><i class="bi bi-info-circle-fill"></i> Hakkımızda</a></li>
+            </ul>
+            <div class="nav-auth">
+                <a sec:authorize="hasRole('ADMIN')" href="/admin/orders" class="btn-nav-ghost"><i class="bi bi-clipboard-data"></i> Verilen Siparişler</a>
+                <!-- Giriş YAPILMADIYSA: Giriş Yap + Kayıt Ol -->
+                <a sec:authorize="!isAuthenticated()" href="/login" class="btn-nav-ghost"><i class="bi bi-box-arrow-in-right"></i> Giriş Yap</a>
+                <a sec:authorize="!isAuthenticated()" href="/register" class="btn-nav-gold"><i class="bi bi-person-plus-fill"></i> Kayıt Ol</a>
+
+                <!-- Giriş YAPILDIYSA: Siparişlerim + Çıkış Yap -->
+                <a sec:authorize="isAuthenticated()" href="/orders" class="btn-nav-gold"><i class="bi bi-box-seam"></i> Siparişlerim</a>
+                <a sec:authorize="isAuthenticated()" href="/my-quotes" class="btn-nav-ghost"><i class="bi bi-chat-left-text"></i> Tekliflerim</a>
+                <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" style="display:inline-flex; margin:0;">
+                    <button type="submit" class="btn-nav-ghost" style="background: transparent; cursor: pointer;"><i class="bi bi-box-arrow-right"></i> Çıkış Yap</button>
+                </form>
+
+                <a href="/login" class="nav-shield" title="Admin Girişi"><i class="bi bi-shield-lock"></i></a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="shell">
+
+    <div class="page-head">
+        <div class="eyebrow">Katalog / Catalogue</div>
+        <h1 class="page-title">Ürünler</h1>
+    </div>
+
+    <!-- Kontrol paneli -->
+    <div class="control-panel">
+        <div class="panel-label">
+            <i class="bi bi-funnel-fill"></i> Kategoriler
+            <span class="clear-filter" th:if="${category != null}"
+                  th:onclick="'location.href=\'/products\''" title="Filtreyi Temizle">×</span>
+        </div>
+
+        <div class="cat-pills">
+            <a th:href="@{/category/1150}" class="cat-pill">Çelik Halat</a>
+            <a th:href="@{/category/1151}" class="cat-pill">Zincirler</a>
+            <a th:href="@{/category/1152}" class="cat-pill">Bağlantı Elemanları</a>
+            <a th:href="@{/category/1153}" class="cat-pill">Polyester Sapan</a>
+            <a th:href="@{/category/1154}" class="cat-pill">Kaldırma Ekipmanları</a>
+            <a th:href="@{/category/1156}" class="cat-pill">Çelik Halat Sapan</a>
+            <a th:href="@{/category/1155}" class="cat-pill">Diğer</a>
+        </div>
+
+        <!-- Arama: kategori içindeyken (category != null) o kategoriye, değilse /products'a
+             gider -> arama sırasında kategori filtresi kaybolmaz. -->
+        <form method="get"
+              th:action="${category != null} ? @{/category/{id}(id=${category.id})} : @{/products}"
+              class="search-row">
+            <!-- size korunur ki arama sırasında kullanıcının seçtiği sayfa boyutu kaybolmasın.
+                 page BİLEREK eklenmiyor -> her yeni arama page=0'dan (ilk sayfa) başlamalı. -->
+            <input type="hidden" name="size" th:value="${currentSize}" />
+            <input type="search" name="keyword" placeholder="Ürün, kategori veya ölçü ara..." th:value="${keyword}" />
+            <button class="search-btn" type="submit" aria-label="Ara"><i class="bi bi-search"></i></button>
+        </form>
+    </div>
+
+    <!-- Yeni Ürün Ekle (Admin) -->
+    <a href="/add" class="admin-add" th:if="${isAdmin}"><i class="bi bi-plus-circle-fill"></i> Yeni Ürün Ekle</a>
+
+    <!-- Ürün grid'i: mobil 2, tablet 3, masaüstü 4 sütun -->
+    <div class="row g-4" th:if="${!productPage.content.isEmpty()}">
+        <!-- id="product-{id}": ürün detayından "#product-{id}" fragment'ıyla geri dönüldüğünde
+             tarayıcı bu karta kaydırır (bkz. ProductController.productDetail - backUrl). -->
+        <div class="col-6 col-md-4 col-lg-3" th:each="product : ${productPage.content}"
+             th:id="|product-${product.id}|">
+            <!-- Ürün detayına giderken hangi liste sayfasından (pagination/kategori/arama
+                 dahil) geldiğimizi taşıyoruz -> product_detail.html'deki "Ürünlere Dön" linki
+                 doğru sayfaya döner (bkz. ProductController.buildListReturnUrl). -->
+            <a th:href="@{/products/{id}(id=${product.id}, returnUrl=${currentListUrl})}" class="p-card">
+                <div class="p-media">
+                    <img th:src="@{${product.imagePath}}" th:alt="${product.name}" alt="Ürün Görseli" />
+                </div>
+                <div class="p-body">
+                    <h3 class="p-name" th:text="${product.name}">Ürün Adı</h3>
+                    <span class="p-stock"
+                          th:classappend="${product.inStock == null or product.inStock} ? 'in' : 'out'"
+                          th:text="${product.inStock == null or product.inStock} ? 'Stokta var' : 'Stokta yok'">Stokta var</span>
+                    <span class="p-cta">Detay <i class="bi bi-arrow-right"></i></span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Arama/filtre sonucu boşsa (mevcut kart/CSS yapısına dokunmadan basit bir bilgi mesajı) -->
+    <p th:if="${productPage.content.isEmpty()}"
+       style="text-align:center; color:var(--muted); font-family:var(--f-mono); padding:40px 0;">
+        <i class="bi bi-search"></i> Aramanızla eşleşen ürün bulunamadı.
+    </p>
+
+    <!-- Pagination -->
+    <nav>
+        <ul class="pagination justify-content-center mt-5">
+            <li th:classappend="${productPage.first} ? 'disabled'" class="page-item">
+                <a class="page-link"
+                   th:href="${category != null} ?
+                        @{/category/{id}(id=${category.id}, page=${currentPage - 1 < 0 ? 0 : currentPage - 1}, size=${currentSize}, keyword=${keyword})} :
+                        @{/products(page=${currentPage - 1 < 0 ? 0 : currentPage - 1}, size=${currentSize}, keyword=${keyword})}">
+                    Önceki
+                </a>
+            </li>
+
+            <li th:each="i : ${pageNumbers}" th:classappend="${i == currentPage} ? 'active'" class="page-item">
+                <a class="page-link"
+                   th:href="${category != null} ?
+                        @{/category/{id}(id=${category.id}, page=${i}, size=${currentSize}, keyword=${keyword})} :
+                        @{/products(page=${i}, size=${currentSize}, keyword=${keyword})}"
+                   th:text="${i + 1}">1</a>
+            </li>
+
+            <li th:classappend="${productPage.last} ? 'disabled'" class="page-item">
+                <a class="page-link"
+                   th:href="${category != null} ?
+                        @{/category/{id}(id=${category.id}, page=${currentPage + 1 > totalPages - 1 ? totalPages - 1 : currentPage + 1}, size=${currentSize}, keyword=${keyword})} :
+                        @{/products(page=${currentPage + 1 > totalPages - 1 ? totalPages - 1 : currentPage + 1}, size=${currentSize}, keyword=${keyword})}">
+                    Sonraki
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer">
+    <div class="container footer-inner">
+        <div class="f-brand">
+            <img src="/uploads/deniz-logo.png" alt="Deniz Çelik Halat" class="f-logo" />
+            <p>Endüstriyel çelik halat, zincir, sapan ve kaldırma ekipmanlarında güvenilir tedarik.</p>
+        </div>
+        <div class="f-col">
+            <h4>İletişim</h4>
+            <a href="https://maps.app.goo.gl/q5HHyXKietcfTcU89" target="_blank" rel="noopener noreferrer"><i class="bi bi-geo-alt-fill"></i> Bornova, İzmir</a>
+            <a href="mailto:info@denizcelikhalat.com"><i class="bi bi-envelope-fill"></i> info@denizcelikhalat.com</a>
+            <a href="tel:+902324567890"><i class="bi bi-telephone-fill"></i> +90 232 456 78 90</a>
+            <a href="tel:+902323758235"><i class="bi bi-telephone-fill"></i> +90 232 375 82 35</a>
+        </div>
+        <div class="f-col">
+            <h4>Hızlı Erişim</h4>
+            <a href="/"><i class="bi bi-house-fill"></i> Anasayfa</a>
+            <a href="/cart"><i class="bi bi-cart-fill"></i> Sepetim</a>
+            <a href="/#markalarimiz-hakkimizda"><i class="bi bi-info-circle-fill"></i> Hakkımızda</a>
+        </div>
+        <div class="f-col">
+            <h4>Yasal</h4>
+            <a href="/mesafeli-satis-sozlesmesi"><i class="bi bi-file-earmark-text-fill"></i> Mesafeli Satış Sözleşmesi</a>
+            <a href="/teslimat-ve-iade"><i class="bi bi-truck"></i> Teslimat ve İade</a>
+            <a href="/gizlilik-politikasi"><i class="bi bi-shield-lock-fill"></i> Gizlilik Politikası</a>
+        </div>
+    </div>
+
+    <div class="footer-payments">
+        <span class="pay-label">Güvenli Ödeme</span>
+        <img src="/uploads/payment-logos.png"
+             alt="iyzico, Mastercard, Visa, American Express ve Troy ile güvenli ödeme"
+             class="footer-payment-logo-band">
+    </div>
+    <div class="footer-base">© 2025 Deniz Çelik Halat — Tüm hakları saklıdır.</div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

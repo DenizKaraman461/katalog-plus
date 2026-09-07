@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ödeme Alındı | Deniz Çelik Halat</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Saira+Condensed:wght@500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        :root{
+            --ink:#050506; --panel:rgba(14,14,16,.74); --line:rgba(255,215,0,.22);
+            --gold:#FFD700; --gold-2:#E9C200; --text:#ECECEC; --muted:#9a9a9a;
+            --ok:#56d68a;
+            --f-display:'Saira Condensed',system-ui,sans-serif;
+            --f-body:'Inter',system-ui,sans-serif;
+            --f-mono:'JetBrains Mono',ui-monospace,monospace;
+        }
+        *{box-sizing:border-box}
+        body{
+            margin:0; min-height:100vh; color:var(--text); font-family:var(--f-body);
+            background:linear-gradient(180deg, rgba(4,5,7,.72), rgba(4,5,7,.86)), url('/uploads/Background.png') no-repeat center center;
+            background-size:cover; display:flex; flex-direction:column;
+        }
+
+        /* ===== ORTAK NAVBAR ===== */
+        .site-nav{background:rgba(0,0,0,.86); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:.45rem 0}
+        .brand-logo{height:52px; width:auto; filter:drop-shadow(0 0 10px rgba(255,215,0,.28))}
+        .navbar-toggler{border:1px solid var(--line); padding:.3rem .55rem; border-radius:8px}
+        .navbar-toggler i{color:var(--gold); font-size:1.5rem; line-height:1}
+        .nav-link{color:#e9e9e9 !important; font-weight:500; display:flex; align-items:center; gap:8px; padding:.5rem .95rem !important; border-radius:8px}
+        .nav-link i{color:var(--gold)}
+        .nav-link:hover{color:#fff !important; background:rgba(255,215,0,.08)}
+        .nav-auth{display:flex; align-items:center; gap:10px}
+        .btn-nav-ghost{display:inline-flex; align-items:center; gap:7px; border:1.5px solid var(--line); color:var(--gold); padding:.5rem 1rem; border-radius:10px; text-decoration:none; font-weight:600}
+        .btn-nav-gold{display:inline-flex; align-items:center; gap:7px; background:linear-gradient(180deg,#FFE970,#FFD700 55%,#E9C200); color:#15171c; padding:.5rem 1.05rem; border-radius:10px; text-decoration:none; font-weight:700}
+        .nav-shield{color:var(--gold); font-size:1.35rem; text-decoration:none; padding:.2rem .3rem}
+        @media (max-width:991px){
+            .navbar-collapse{background:rgba(8,8,10,.98); border:1px solid var(--line); border-radius:14px; margin-top:12px; padding:16px}
+            .nav-auth{flex-wrap:wrap; margin-top:14px; padding-top:14px; border-top:1px dashed var(--line)}
+            .btn-nav-ghost,.btn-nav-gold{flex:1 1 auto; justify-content:center}
+        }
+
+        /* ===== Başarı kartı ===== */
+        .success-wrap{flex:1; display:flex; align-items:center; justify-content:center; padding:120px 16px 56px}
+        .success-card{
+            position:relative; width:100%; max-width:560px; text-align:center;
+            padding:46px 40px 38px;
+            background:var(--panel); backdrop-filter:blur(16px) saturate(120%);
+            border:1px solid var(--line); border-radius:18px;
+            box-shadow:0 28px 70px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.05);
+        }
+        .frame::before,.frame::after{content:""; position:absolute; width:26px; height:26px; pointer-events:none}
+        .frame::before{top:12px; left:12px; border-top:2px solid var(--gold); border-left:2px solid var(--gold)}
+        .frame::after{bottom:12px; right:12px; border-bottom:2px solid var(--gold); border-right:2px solid var(--gold)}
+
+        .ok-badge{
+            width:96px; height:96px; margin:0 auto 22px; border-radius:50%;
+            display:flex; align-items:center; justify-content:center;
+            background:radial-gradient(circle at 50% 35%, rgba(86,214,138,.22), rgba(86,214,138,.06));
+            border:1.5px solid rgba(86,214,138,.5);
+            box-shadow:0 0 28px rgba(86,214,138,.28), inset 0 0 18px rgba(86,214,138,.15);
+        }
+        .ok-badge i{font-size:3rem; color:var(--ok); text-shadow:0 0 14px rgba(86,214,138,.5)}
+
+        .eyebrow{font-family:var(--f-mono); font-size:.72rem; letter-spacing:.32em; color:var(--gold-2); text-transform:uppercase; margin-bottom:8px}
+        .success-title{
+            font-family:var(--f-display); font-weight:700; text-transform:uppercase; letter-spacing:.05em;
+            font-size:2.1rem; color:#fff; margin:0 0 10px;
+            text-shadow:0 0 12px rgba(255,215,0,.4), 0 0 28px rgba(255,215,0,.18);
+        }
+        .success-sub{color:#cfcfcf; font-size:.98rem; line-height:1.6; margin:0 auto 26px; max-width:430px}
+
+        .code-box{
+            display:flex; flex-direction:column; align-items:center; gap:6px;
+            border:1px dashed var(--line); border-radius:14px; padding:18px 16px; margin:0 0 28px;
+            background:rgba(0,0,0,.32);
+        }
+        .code-cap{font-family:var(--f-mono); font-size:.7rem; letter-spacing:.26em; text-transform:uppercase; color:var(--muted)}
+        .code-val{font-family:var(--f-mono); font-weight:700; font-size:1.9rem; color:var(--gold); text-shadow:0 0 16px rgba(255,215,0,.45); letter-spacing:.04em}
+        .paid-pill{display:inline-flex; align-items:center; gap:6px; font-family:var(--f-mono); font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; padding:5px 14px; border-radius:999px; border:1px solid rgba(86,214,138,.45); color:var(--ok); background:rgba(86,214,138,.08); margin-top:10px}
+
+        .actions{display:flex; gap:12px; justify-content:center; flex-wrap:wrap}
+        .btn-gold{
+            display:inline-flex; align-items:center; gap:9px; padding:.82rem 1.6rem; border:none; border-radius:11px; cursor:pointer;
+            font-family:var(--f-display); font-weight:600; letter-spacing:.07em; text-transform:uppercase; font-size:1.02rem;
+            color:#15171c; background:linear-gradient(180deg,#FFE970,#FFD700 55%,#E9C200);
+            box-shadow:0 10px 28px rgba(255,215,0,.3); text-decoration:none;
+        }
+        .btn-gold:hover{transform:translateY(-2px); box-shadow:0 16px 40px rgba(255,215,0,.5)}
+        .btn-ghost{display:inline-flex; align-items:center; gap:9px; padding:.82rem 1.4rem; border:1.5px solid var(--line); border-radius:11px; color:#ddd; text-decoration:none; font-weight:600; background:transparent}
+        .btn-ghost:hover{border-color:#fff; color:#fff; background:rgba(255,255,255,.05)}
+
+        @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+        @media (max-width:575px){ .success-card{padding:38px 22px 30px} .success-title{font-size:1.7rem} .code-val{font-size:1.55rem} }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg fixed-top site-nav">
+    <div class="container">
+        <a class="navbar-brand" href="/"><img src="/uploads/deniz-logo.png" alt="Deniz Çelik Halat" class="brand-logo" /></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"><i class="bi bi-list"></i></button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav mx-lg-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" href="/"><i class="bi bi-house-fill"></i> Anasayfa</a></li>
+                <li class="nav-item"><a class="nav-link" href="/products"><i class="bi bi-grid-3x3-gap-fill"></i> Ürünler</a></li>
+                <li class="nav-item"><a class="nav-link" href="/cart"><i class="bi bi-cart-fill"></i> Sepetim</a></li>
+            </ul>
+            <div class="nav-auth">
+                <a sec:authorize="hasRole('ADMIN')" href="/admin/orders" class="btn-nav-ghost"><i class="bi bi-clipboard-data"></i> Admin Siparişleri</a>
+                <a sec:authorize="isAuthenticated()" href="/orders" class="btn-nav-ghost"><i class="bi bi-box-seam"></i> Siparişlerim</a>
+                <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" style="display:inline-flex; margin:0;">
+                    <button type="submit" class="btn-nav-ghost" style="background:transparent; cursor:pointer;"><i class="bi bi-box-arrow-right"></i> Çıkış Yap</button>
+                </form>
+                <a sec:authorize="!isAuthenticated()" href="/login" class="btn-nav-gold"><i class="bi bi-box-arrow-in-right"></i> Giriş Yap</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="success-wrap">
+    <div class="success-card frame">
+
+        <div class="ok-badge"><i class="bi bi-credit-card-2-front-fill"></i></div>
+
+        <div class="eyebrow">Sipariş Onayı · Ödeme Onayı / Order &amp; Payment Confirmed</div>
+        <h1 class="success-title">Sipariş Alındı</h1>
+        <p class="success-sub">
+            Teşekkür ederiz! Siparişinizin ödemesi başarıyla tamamlandı.
+            Ekibimiz siparişinizi hazırlamaya başlayacak.
+        </p>
+
+        <div class="code-box">
+            <span class="code-cap">Sipariş Kodunuz</span>
+            <span class="code-val" th:text="'#DCH-' + ${order.id}">#DCH-0</span>
+            <span class="code-cap" style="margin-top:10px;">Ödenen Tutar</span>
+            <span class="code-val" style="font-size:1.4rem;"
+                  th:text="${#numbers.formatDecimal(order.totalAmount,1,'POINT',2,'COMMA')} + ' ' + ${order.currency.symbol}">0,00 $</span>
+            <span class="code-cap" style="margin-top:10px;" th:if="${order.paymentAmount != null}">Kartla Tahsil Edilen Tutar</span>
+            <span class="code-val" style="font-size:1.1rem;" th:if="${order.paymentAmount != null}"
+                  th:text="${#numbers.formatDecimal(order.paymentAmount,1,'POINT',2,'COMMA')} + ' TL'">0,00 TL</span>
+            <span class="paid-pill"><i class="bi bi-check-circle-fill"></i> Ödeme Tamamlandı</span>
+        </div>
+
+        <div class="actions">
+            <a th:href="@{'/orders/' + ${order.id}}" class="btn-gold"><i class="bi bi-receipt"></i> Sipariş Detayına Git</a>
+            <a href="/orders" class="btn-ghost"><i class="bi bi-box-seam"></i> Siparişlerime Git</a>
+            <a href="/products" class="btn-ghost"><i class="bi bi-grid-3x3-gap-fill"></i> Ürünlere Dön</a>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

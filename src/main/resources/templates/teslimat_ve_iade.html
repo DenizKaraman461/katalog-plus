@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Teslimat ve İade | Deniz Çelik Halat</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Saira+Condensed:wght@500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        :root{
+            --ink:#050506; --panel:rgba(14,14,16,.74); --line:rgba(255,215,0,.22);
+            --gold:#FFD700; --gold-2:#E9C200; --text:#ECECEC; --muted:#9a9a9a;
+            --f-display:'Saira Condensed',system-ui,sans-serif;
+            --f-body:'Inter',system-ui,sans-serif; --f-mono:'JetBrains Mono',ui-monospace,monospace;
+        }
+        *{box-sizing:border-box}
+        body{margin:0; min-height:100vh; color:var(--text); font-family:var(--f-body); padding-top:104px;
+            background:linear-gradient(180deg, rgba(3,3,4,.9), rgba(3,3,4,.94)), url('/uploads/Background.png') no-repeat center center fixed; background-size:cover}
+
+        .shell{max-width:900px; margin:0 auto; padding:24px 18px 70px}
+        .page-head{margin-bottom:22px}
+        .eyebrow{font-family:var(--f-mono); font-size:.72rem; letter-spacing:.3em; color:var(--gold-2); text-transform:uppercase; margin-bottom:6px}
+        .page-title{font-family:var(--f-display); font-weight:700; text-transform:uppercase; letter-spacing:.04em; font-size:2rem; color:#fff; margin:0; text-shadow:0 0 10px rgba(255,215,0,.4)}
+        .updated-at{font-family:var(--f-mono); font-size:.78rem; color:var(--muted); margin-top:8px}
+
+        .draft-notice{
+            display:flex; gap:12px; align-items:flex-start; background:rgba(255,180,0,.08); border:1px solid rgba(255,180,0,.4);
+            border-radius:12px; padding:16px 18px; margin-bottom:26px; color:#ffe3ad; font-size:.92rem; line-height:1.55;
+        }
+        .draft-notice i{font-size:1.3rem; color:#ffbf3d; flex:0 0 auto; margin-top:2px}
+
+        .legal-card{
+            background:var(--panel); backdrop-filter:blur(16px) saturate(120%); border:1px solid var(--line);
+            border-radius:16px; padding:30px 34px; box-shadow:0 20px 50px rgba(0,0,0,.5);
+        }
+        .legal-card h2{
+            font-family:var(--f-display); font-weight:700; text-transform:uppercase; letter-spacing:.03em;
+            font-size:1.25rem; color:var(--gold); margin:32px 0 12px; padding-bottom:8px; border-bottom:1px dashed var(--line);
+        }
+        .legal-card h2:first-of-type{margin-top:0}
+        .legal-card h3{font-family:var(--f-display); font-size:1.05rem; color:#fff; margin:18px 0 8px}
+        .legal-card p{color:#dcdcdc; line-height:1.7; font-size:.95rem; margin:0 0 12px}
+        .legal-card ul, .legal-card ol{color:#dcdcdc; line-height:1.7; font-size:.95rem; padding-left:22px; margin:0 0 14px}
+        .legal-card li{margin-bottom:6px}
+        .legal-card strong{color:#fff}
+
+        .placeholder-box{
+            background:rgba(0,0,0,.4); border:1px dashed var(--line); border-radius:12px; padding:16px 18px; margin:14px 0 18px;
+        }
+        .placeholder-box .row-item{display:flex; gap:8px; font-family:var(--f-mono); font-size:.88rem; padding:4px 0; flex-wrap:wrap}
+        .placeholder-box .row-item .lbl{color:var(--gold-2); min-width:170px}
+        .placeholder-box .row-item .val{color:#ffcf7a}
+
+        .step-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin:16px 0 20px}
+        .step-box{background:rgba(0,0,0,.35); border:1px solid var(--line); border-radius:12px; padding:16px}
+        .step-box .num{font-family:var(--f-mono); color:var(--gold); font-size:.78rem; letter-spacing:.1em; text-transform:uppercase}
+        .step-box p{margin:6px 0 0; font-size:.88rem}
+
+        @media (max-width:575px){ .legal-card{padding:22px 18px} .page-title{font-size:1.6rem} .placeholder-box .row-item .lbl{min-width:130px} }
+    </style>
+</head>
+<body>
+
+<header th:replace="~{fragments/navbar :: navbar('legal')}"></header>
+
+<div class="shell">
+
+    <div class="page-head">
+        <div class="eyebrow">Yasal Bilgilendirme</div>
+        <h1 class="page-title">Teslimat ve İade</h1>
+        <div class="updated-at">Son güncelleme: [GG.AA.YYYY]</div>
+    </div>
+
+    <div class="draft-notice">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <div>
+            <strong>Bu metin hukuki bir TASLAKTIR.</strong> Yayına almadan önce mutlaka bir hukuk danışmanına/
+            avukata onaylatınız. Kargo firması, teslimat süreleri ve iade adresi gibi operasyonel bilgiler
+            kendi süreçlerinize göre güncellenmelidir.
+        </div>
+    </div>
+
+    <div class="legal-card">
+
+        <h2>1. Taraflar</h2>
+        <p>İşbu Teslimat ve İade Bilgilendirmesi, aşağıda bilgileri yer alan SATICI ile internet sitesi
+            üzerinden alışveriş yapan ALICI (Müşteri) arasındaki teslimat ve iade süreçlerine ilişkin esasları
+            düzenler. Sözleşmesel çerçeve için ayrıca
+            <a th:href="@{/mesafeli-satis-sozlesmesi}" style="color:var(--gold);">Mesafeli Satış
+            Sözleşmesi</a>'ne bakınız.</p>
+
+        <div class="placeholder-box">
+            <div class="row-item"><span class="lbl">Satıcı Ünvanı:</span><span class="val">[Satıcı Ünvanı]</span></div>
+            <div class="row-item"><span class="lbl">Adres:</span><span class="val">[Adres]</span></div>
+            <div class="row-item"><span class="lbl">Telefon:</span><span class="val">[Telefon]</span></div>
+            <div class="row-item"><span class="lbl">E-posta:</span><span class="val">[E-posta]</span></div>
+            <div class="row-item"><span class="lbl">MERSİS/Vergi No:</span><span class="val">[MERSİS/Vergi No]</span></div>
+            <div class="row-item"><span class="lbl">Vergi Dairesi:</span><span class="val">[Vergi Dairesi]</span></div>
+        </div>
+
+        <h2>2. Ürün/Hizmet Bilgisi</h2>
+        <p>Sipariş edilen ürünün cinsi, miktarı, teknik özellikleri (ölçü, çap, kapasite vb.) ve satış bedeli,
+            sipariş onayı sırasında ALICI'ya sunulan sipariş özetinde/faturada yer aldığı şekildedir. Ölçüye/
+            projeye özel (teklif ile fiyatlandırılan) ürünlerde teslimat süresi, ürünün üretim/hazırlık süresine
+            bağlı olarak ayrıca ALICI'ya bildirilir.</p>
+
+        <h2>3. Ödeme</h2>
+        <p>Ödemeler, SATICI'nın anlaşmalı olduğu ödeme kuruluşu (iyzico) altyapısı üzerinden Visa/Mastercard
+            kredi veya banka kartı ile alınır. Kart bilgileri SATICI'nın sunucularında saklanmaz; işlem
+            doğrudan ödeme kuruluşunun güvenli sayfasında gerçekleştirilir. Sipariş, ödeme onaylandıktan sonra
+            "Ödendi" durumuna geçer ve hazırlık sürecine alınır.</p>
+
+        <h2>4. Teslimat</h2>
+        <ul>
+            <li><strong>Kargo Firması:</strong> [Kargo Firması Adı]</li>
+            <li><strong>Tahmini Teslimat Süresi:</strong> Ödemenin onaylanmasından itibaren [X-Y iş günü]
+                (stok/üretim durumuna göre değişebilir).</li>
+            <li><strong>Teslimat Bölgesi:</strong> Türkiye geneli. [Belirli bölgelere teslimat kısıtlaması
+                varsa buraya ekleyiniz.]</li>
+            <li><strong>Kargo Ücreti:</strong> [Kargo ücreti bilgisi / belirli tutar üzeri ücretsiz kargo
+                koşulu varsa buraya ekleyiniz.]</li>
+            <li>Sipariş kargoya verildiğinde ALICI'ya e-posta ile bilgilendirme yapılır ve sipariş durumu
+                "Kargoya Verildi" olarak güncellenir.</li>
+            <li>Ölçüye/projeye özel üretilen ürünlerde teslimat süresi, standart stoklu ürünlere göre daha
+                uzun olabilir; bu durumda ALICI ayrıca bilgilendirilir.</li>
+        </ul>
+
+        <h2>5. Cayma Hakkı</h2>
+        <p>ALICI, ürünün kendisine tesliminden itibaren <strong>14 (on dört) gün</strong> içinde, hiçbir
+            gerekçe göstermeksizin cayma hakkını kullanabilir. Cayma hakkının kullanılamayacağı haller (özellikle
+            <strong>ölçüye/projeye özel hazırlanan ürünler</strong>) için
+            <a th:href="@{/mesafeli-satis-sozlesmesi}" style="color:var(--gold);">Mesafeli Satış
+            Sözleşmesi</a>'nin ilgili maddesine bakınız.</p>
+
+        <h2>6. İade Süreci</h2>
+        <p>Cayma hakkı kapsamında iade etmek istediğiniz ürünler için aşağıdaki adımları izleyebilirsiniz:</p>
+
+        <div class="step-grid">
+            <div class="step-box">
+                <div class="num">Adım 1</div>
+                <p>[E-posta/telefon] üzerinden SATICI'ya iade talebinizi 14 gün içinde bildirin.</p>
+            </div>
+            <div class="step-box">
+                <div class="num">Adım 2</div>
+                <p>Ürünü, faturasıyla birlikte orijinal ambalajında, kullanılmamış ve hasarsız şekilde hazırlayın.</p>
+            </div>
+            <div class="step-box">
+                <div class="num">Adım 3</div>
+                <p>SATICI'nın bildireceği iade adresine, anlaşmalı kargo ile (varsa) ücretsiz gönderin.</p>
+            </div>
+            <div class="step-box">
+                <div class="num">Adım 4</div>
+                <p>Ürün teslim alınıp kontrol edildikten sonra bedel, ödeme yönteminize 10 iş günü içinde iade edilir.</p>
+            </div>
+        </div>
+
+        <p><strong>İade Adresi:</strong> [İade Adresi]</p>
+
+        <h2>7. İade Edilemeyecek Ürünler</h2>
+        <ul>
+            <li>ALICI'nın özel talebi/ölçüsü doğrultusunda hazırlanan (teklif süreciyle fiyatlandırılan) çelik
+                halat, sapan, zincir ve benzeri ürünler.</li>
+            <li>Ambalajı açılmış, kullanılmış veya hasar görmüş ürünler.</li>
+            <li>Niteliği itibarıyla iadeye uygun olmayan, kesim/işleme yapılmış ürünler.</li>
+        </ul>
+
+        <h2>8. Kişisel Verilerin Korunması</h2>
+        <p>Teslimat ve iade süreçlerinde işlenen kişisel veriler (ad-soyad, adres, telefon vb.) hakkında bilgi
+            için <a th:href="@{/gizlilik-politikasi}" style="color:var(--gold);">Gizlilik Politikası</a>
+            sayfasını inceleyebilirsiniz.</p>
+
+        <h2>9. İletişim Bilgileri</h2>
+        <p>Teslimat ve iade süreçleriyle ilgili sorularınız için:</p>
+        <div class="placeholder-box">
+            <div class="row-item"><span class="lbl">Telefon:</span><span class="val">[Telefon]</span></div>
+            <div class="row-item"><span class="lbl">E-posta:</span><span class="val">[E-posta]</span></div>
+            <div class="row-item"><span class="lbl">Adres:</span><span class="val">[Adres]</span></div>
+        </div>
+
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

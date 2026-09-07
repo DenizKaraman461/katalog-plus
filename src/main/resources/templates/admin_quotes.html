@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Teklif Talepleri | Deniz Çelik Halat</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Saira+Condensed:wght@500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        :root{
+            --ink:#050506; --panel:rgba(14,14,16,.74); --line:rgba(255,215,0,.22);
+            --gold:#FFD700; --gold-2:#E9C200; --text:#ECECEC; --muted:#9a9a9a; --ok:#7CFC9B;
+            --f-display:'Saira Condensed',system-ui,sans-serif;
+            --f-body:'Inter',system-ui,sans-serif; --f-mono:'JetBrains Mono',ui-monospace,monospace;
+        }
+        *{box-sizing:border-box}
+        body{margin:0; min-height:100vh; color:var(--text); font-family:var(--f-body); padding-top:104px;
+            background:linear-gradient(180deg, rgba(3,3,4,.9), rgba(3,3,4,.94)), url('/uploads/Background.png') no-repeat center center fixed; background-size:cover}
+        .site-nav{background:rgba(0,0,0,.86); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:.45rem 0}
+        .brand-logo{height:52px; width:auto; filter:drop-shadow(0 0 10px rgba(255,215,0,.28))}
+        .navbar-toggler{border:1px solid var(--line); padding:.3rem .55rem; border-radius:8px}
+        .navbar-toggler i{color:var(--gold); font-size:1.5rem; line-height:1}
+        .nav-link{color:#e9e9e9 !important; font-weight:500; display:flex; align-items:center; gap:8px; padding:.5rem .95rem !important; border-radius:8px}
+        .nav-link i{color:var(--gold)}
+        .nav-link:hover{color:#fff !important; background:rgba(255,215,0,.08)}
+        .nav-auth{display:flex; align-items:center; gap:10px}
+        .btn-nav-ghost{display:inline-flex; align-items:center; gap:7px; border:1.5px solid var(--line); color:var(--gold); padding:.5rem 1rem; border-radius:10px; text-decoration:none; font-weight:600}
+        .shell{max-width:1100px; margin:0 auto; padding:24px 18px 70px}
+        .page-head{margin-bottom:22px}
+        .eyebrow{font-family:var(--f-mono); font-size:.72rem; letter-spacing:.3em; color:var(--gold-2); text-transform:uppercase; margin-bottom:6px}
+        .page-title{font-family:var(--f-display); font-weight:700; text-transform:uppercase; letter-spacing:.04em; font-size:2rem; color:#fff; margin:0; text-shadow:0 0 10px rgba(255,215,0,.4)}
+        .empty{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:40px; text-align:center; color:var(--muted)}
+        .empty i{font-size:2.4rem; color:var(--gold); display:block; margin-bottom:10px}
+        .qcard{position:relative; background:var(--panel); backdrop-filter:blur(16px) saturate(120%); border:1px solid var(--line); border-radius:16px; padding:20px 22px; margin-bottom:18px; box-shadow:0 20px 50px rgba(0,0,0,.5)}
+        .qhead{display:flex; justify-content:space-between; align-items:flex-start; gap:14px; flex-wrap:wrap; margin-bottom:14px; padding-bottom:12px; border-bottom:1px dashed var(--line)}
+        .qprod{font-family:var(--f-display); font-weight:700; font-size:1.25rem; color:#fff; letter-spacing:.02em}
+        .qprod small{display:block; font-family:var(--f-mono); font-size:.72rem; color:var(--muted); letter-spacing:.08em; margin-top:2px}
+        .qdate{font-family:var(--f-mono); font-size:.78rem; color:var(--gold-2); white-space:nowrap}
+        .qgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px 22px}
+        .qrow .k{font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+        .qrow .v{color:#fff; margin-top:2px; word-break:break-word}
+        .badge-cert{display:inline-flex; align-items:center; gap:6px; font-family:var(--f-mono); font-size:.72rem; padding:5px 11px; border-radius:999px; border:1px solid rgba(124,252,155,.4); color:var(--ok); background:rgba(124,252,155,.08)}
+        .badge-no{display:inline-flex; align-items:center; gap:6px; font-family:var(--f-mono); font-size:.72rem; padding:5px 11px; border-radius:999px; border:1px solid var(--line); color:var(--muted)}
+        .qnote{margin-top:14px; padding-top:12px; border-top:1px dashed var(--line)}
+        .qnote .k{font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:4px}
+        .qnote .v{color:#e8e8e8; white-space:pre-line; line-height:1.55}
+        .actions{display:flex; gap:12px; flex-wrap:wrap; margin-top:6px}
+        .btn-ghost{display:inline-flex; align-items:center; gap:8px; padding:.66rem 1.3rem; border:1.5px solid var(--line); border-radius:11px; color:#ddd; text-decoration:none; font-weight:600}
+        .btn-ghost:hover{border-color:#fff; color:#fff; background:rgba(255,255,255,.05)}
+        /* ===== Durum (status) ===== */
+        .alert-success{border:1px solid rgba(124,252,155,.45); background:rgba(124,252,155,.1); color:#aef0bf; border-radius:11px; padding:.8rem 1rem; margin-bottom:18px; font-size:.92rem}
+        .alert-error{border:1px solid rgba(255,82,82,.5); background:rgba(255,82,82,.12); color:#ffb3b3; border-radius:11px; padding:.8rem 1rem; margin-bottom:18px; font-size:.92rem}
+        .qmeta{display:flex; flex-direction:column; align-items:flex-end; gap:8px}
+        .status-pill{font-family:var(--f-mono); font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; padding:5px 12px; border-radius:999px; border:1px solid var(--line); white-space:nowrap}
+        .st-NEW{color:#ffe27a; border-color:rgba(255,215,0,.45); background:rgba(255,215,0,.08)}
+        .st-CONTACTED{color:#86c5ff; border-color:rgba(110,170,255,.45); background:rgba(110,170,255,.1)}
+        .st-OFFER_SENT{color:#c5a3ff; border-color:rgba(170,130,255,.45); background:rgba(170,130,255,.1)}
+        .st-CLOSED{color:var(--ok); border-color:rgba(124,252,155,.45); background:rgba(124,252,155,.08)}
+        .st-CANCELLED{color:#ff8b8b; border-color:rgba(255,82,82,.45); background:rgba(255,82,82,.1)}
+        .status-form{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:14px; padding-top:12px; border-top:1px dashed var(--line)}
+        .status-form .st-cap{font-family:var(--f-mono); font-size:.7rem; letter-spacing:.18em; text-transform:uppercase; color:var(--gold-2)}
+        .status-form .form-select{background:rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.12); color:#fff; border-radius:10px; padding:.55rem .85rem; min-width:190px}
+        .status-form .form-select:focus{outline:none; border-color:var(--gold); box-shadow:0 0 0 .15rem rgba(255,215,0,.16)}
+        .status-form .form-select option{background:#0c0c0e; color:#fff}
+        .status-form .btn-upd{display:inline-flex; align-items:center; gap:7px; padding:.55rem 1.1rem; border:none; border-radius:10px; cursor:pointer; color:#100d00; font-weight:700; background:linear-gradient(180deg,#FFE970,#FFD700 55%,#E9C200)}
+        @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg fixed-top site-nav">
+    <div class="container">
+        <a class="navbar-brand" href="/"><img src="/uploads/deniz-logo.png" alt="Deniz Çelik Halat" class="brand-logo" /></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"><i class="bi bi-list"></i></button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav mx-lg-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" href="/admin/orders"><i class="bi bi-clipboard-data"></i> Siparişler</a></li>
+                <li class="nav-item"><a class="nav-link" href="/admin/quotes"><i class="bi bi-file-earmark-text"></i> Teklifler</a></li>
+                <li class="nav-item"><a class="nav-link" href="/products"><i class="bi bi-grid-3x3-gap-fill"></i> Ürünler</a></li>
+            </ul>
+            <div class="nav-auth">
+                <form th:action="@{/logout}" method="post" style="display:inline-flex; margin:0;">
+                    <button type="submit" class="btn-nav-ghost" style="background:transparent; cursor:pointer;"><i class="bi bi-box-arrow-right"></i> Çıkış</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="shell">
+
+    <div class="page-head">
+        <div class="eyebrow">Yönetim / Admin</div>
+        <h1 class="page-title">Teklif Talepleri</h1>
+    </div>
+
+    <div class="alert-success" th:if="${success}" th:text="${success}">Tamam</div>
+    <div class="alert-error" th:if="${error}" th:text="${error}">Hata</div>
+
+    <!-- Boş durum -->
+    <div class="empty" th:if="${quotes == null or quotes.isEmpty()}">
+        <i class="bi bi-inbox"></i>
+        Henüz teklif talebi yok.
+    </div>
+
+    <!-- Teklif kartları -->
+    <div th:each="q : ${quotes}" class="qcard">
+        <div class="qhead">
+            <div class="qprod">
+                <span th:text="${q.productName} ?: 'Ürün'">Ürün Adı</span>
+                <small th:if="${q.productId != null}" th:text="|Ürün ID: ${q.productId}|">Ürün ID: 0</small>
+            </div>
+            <div class="qmeta">
+                <div class="qdate" th:text="${q.createdAt != null} ? ${#temporals.format(q.createdAt,'dd.MM.yyyy HH:mm')} : '—'">—</div>
+                <span class="status-pill" th:classappend="${'st-' + (q.status != null ? q.status : 'NEW')}"
+                      th:switch="${q.status != null ? q.status : 'NEW'}">
+                    <span th:case="'NEW'">Yeni Talep</span>
+                    <span th:case="'CONTACTED'">Müşteri Arandı</span>
+                    <span th:case="'OFFER_SENT'">Teklif Gönderildi</span>
+                    <span th:case="'CLOSED'">Tamamlandı</span>
+                    <span th:case="'CANCELLED'">İptal</span>
+                    <span th:case="*" th:text="${q.status}">—</span>
+                </span>
+            </div>
+        </div>
+
+        <div class="qgrid">
+            <div class="qrow"><div class="k">Ad Soyad</div><div class="v" th:text="${q.customerName} ?: '—'">—</div></div>
+            <div class="qrow"><div class="k">Telefon</div><div class="v" th:text="${q.phone} ?: '—'">—</div></div>
+            <div class="qrow"><div class="k">E-posta</div><div class="v" th:text="${q.email} ?: '—'">—</div></div>
+            <div class="qrow"><div class="k">Firma</div><div class="v" th:text="${q.companyName} ?: '—'">—</div></div>
+            <div class="qrow"><div class="k">Sapan Tipi</div><div class="v" th:text="${q.slingType} ?: '—'">—</div></div>
+            <div class="qrow"><div class="k">Kol Sayısı</div><div class="v" th:text="${q.legCount} ?: '—'">—</div></div>
+            <div class="qrow"><div class="k">Halat Çapı</div><div class="v" th:text="${q.ropeDiameter} ?: '—'">—</div></div>
+            <div class="qrow"><div class="k">Halat Tipi</div><div class="v" th:text="${q.ropeType} ?: '—'">—</div></div>
+            <div class="qrow"><div class="k">Uzunluk</div><div class="v" th:text="${q.length} ?: '—'">—</div></div>
+            <div class="qrow"><div class="k">Taşıma Kapasitesi</div><div class="v" th:text="${q.capacity} ?: '—'">—</div></div>
+            <div class="qrow"><div class="k">Çalışma Açısı</div><div class="v" th:text="${q.workingAngle} ?: '—'">—</div></div>
+            <div class="qrow"><div class="k">Üst Bağlantı</div><div class="v" th:text="${q.topConnection} ?: '—'">—</div></div>
+            <div class="qrow"><div class="k">Alt Bağlantı</div><div class="v" th:text="${q.bottomConnection} ?: '—'">—</div></div>
+            <div class="qrow"><div class="k">Adet</div><div class="v" th:text="${q.quantity} ?: '—'">—</div></div>
+            <div class="qrow">
+                <div class="k">Sertifika</div>
+                <div class="v">
+                    <span th:if="${q.certificateRequested}" class="badge-cert"><i class="bi bi-patch-check-fill"></i> İsteniyor</span>
+                    <span th:unless="${q.certificateRequested}" class="badge-no">İstenmiyor</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="qnote" th:if="${q.note != null and !q.note.isBlank()}">
+            <div class="k">Not</div>
+            <div class="v" th:text="${q.note}">—</div>
+        </div>
+
+        <!-- Durum güncelleme (CSRF korumalı POST; /admin/** -> sadece ADMIN) -->
+        <form class="status-form" th:action="@{/admin/quotes/status}" method="post">
+            <input type="hidden" name="quoteId" th:value="${q.id}" />
+            <span class="st-cap">Durum</span>
+            <select class="form-select" name="status" th:with="cur=${q.status != null ? q.status : 'NEW'}">
+                <option value="NEW"        th:selected="${cur == 'NEW'}">Yeni Talep</option>
+                <option value="CONTACTED"  th:selected="${cur == 'CONTACTED'}">Müşteri Arandı</option>
+                <option value="OFFER_SENT" th:selected="${cur == 'OFFER_SENT'}">Teklif Gönderildi</option>
+                <option value="CLOSED"     th:selected="${cur == 'CLOSED'}">Tamamlandı</option>
+                <option value="CANCELLED"  th:selected="${cur == 'CANCELLED'}">İptal</option>
+            </select>
+            <button type="submit" class="btn-upd"><i class="bi bi-check-lg"></i> Güncelle</button>
+        </form>
+    </div>
+
+    <div class="actions">
+        <a href="/admin/orders" class="btn-ghost"><i class="bi bi-clipboard-data"></i> Siparişler</a>
+        <a href="/products" class="btn-ghost"><i class="bi bi-grid-3x3-gap-fill"></i> Ürünler</a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

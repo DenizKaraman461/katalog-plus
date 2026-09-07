@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mesafeli Satış Sözleşmesi | Deniz Çelik Halat</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Saira+Condensed:wght@500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        :root{
+            --ink:#050506; --panel:rgba(14,14,16,.74); --line:rgba(255,215,0,.22);
+            --gold:#FFD700; --gold-2:#E9C200; --text:#ECECEC; --muted:#9a9a9a;
+            --f-display:'Saira Condensed',system-ui,sans-serif;
+            --f-body:'Inter',system-ui,sans-serif; --f-mono:'JetBrains Mono',ui-monospace,monospace;
+        }
+        *{box-sizing:border-box}
+        body{margin:0; min-height:100vh; color:var(--text); font-family:var(--f-body); padding-top:104px;
+            background:linear-gradient(180deg, rgba(3,3,4,.9), rgba(3,3,4,.94)), url('/uploads/Background.png') no-repeat center center fixed; background-size:cover}
+
+        .shell{max-width:900px; margin:0 auto; padding:24px 18px 70px}
+        .page-head{margin-bottom:22px}
+        .eyebrow{font-family:var(--f-mono); font-size:.72rem; letter-spacing:.3em; color:var(--gold-2); text-transform:uppercase; margin-bottom:6px}
+        .page-title{font-family:var(--f-display); font-weight:700; text-transform:uppercase; letter-spacing:.04em; font-size:2rem; color:#fff; margin:0; text-shadow:0 0 10px rgba(255,215,0,.4)}
+        .updated-at{font-family:var(--f-mono); font-size:.78rem; color:var(--muted); margin-top:8px}
+
+        .draft-notice{
+            display:flex; gap:12px; align-items:flex-start; background:rgba(255,180,0,.08); border:1px solid rgba(255,180,0,.4);
+            border-radius:12px; padding:16px 18px; margin-bottom:26px; color:#ffe3ad; font-size:.92rem; line-height:1.55;
+        }
+        .draft-notice i{font-size:1.3rem; color:#ffbf3d; flex:0 0 auto; margin-top:2px}
+
+        .legal-card{
+            background:var(--panel); backdrop-filter:blur(16px) saturate(120%); border:1px solid var(--line);
+            border-radius:16px; padding:30px 34px; box-shadow:0 20px 50px rgba(0,0,0,.5);
+        }
+        .legal-card h2{
+            font-family:var(--f-display); font-weight:700; text-transform:uppercase; letter-spacing:.03em;
+            font-size:1.25rem; color:var(--gold); margin:32px 0 12px; padding-bottom:8px; border-bottom:1px dashed var(--line);
+        }
+        .legal-card h2:first-of-type{margin-top:0}
+        .legal-card h3{font-family:var(--f-display); font-size:1.05rem; color:#fff; margin:18px 0 8px}
+        .legal-card p{color:#dcdcdc; line-height:1.7; font-size:.95rem; margin:0 0 12px}
+        .legal-card ul, .legal-card ol{color:#dcdcdc; line-height:1.7; font-size:.95rem; padding-left:22px; margin:0 0 14px}
+        .legal-card li{margin-bottom:6px}
+        .legal-card strong{color:#fff}
+
+        .placeholder-box{
+            background:rgba(0,0,0,.4); border:1px dashed var(--line); border-radius:12px; padding:16px 18px; margin:14px 0 18px;
+        }
+        .placeholder-box .row-item{display:flex; gap:8px; font-family:var(--f-mono); font-size:.88rem; padding:4px 0; flex-wrap:wrap}
+        .placeholder-box .row-item .lbl{color:var(--gold-2); min-width:170px}
+        .placeholder-box .row-item .val{color:#ffcf7a}
+
+        @media (max-width:575px){ .legal-card{padding:22px 18px} .page-title{font-size:1.6rem} .placeholder-box .row-item .lbl{min-width:130px} }
+    </style>
+</head>
+<body>
+
+<header th:replace="~{fragments/navbar :: navbar('legal')}"></header>
+
+<div class="shell">
+
+    <div class="page-head">
+        <div class="eyebrow">Yasal Bilgilendirme</div>
+        <h1 class="page-title">Mesafeli Satış Sözleşmesi</h1>
+        <div class="updated-at">Son güncelleme: [GG.AA.YYYY]</div>
+    </div>
+
+    <div class="draft-notice">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <div>
+            <strong>Bu metin hukuki bir TASLAKTIR.</strong> 6502 sayılı Tüketicinin Korunması Hakkında Kanun ve
+            Mesafeli Sözleşmeler Yönetmeliği'ne uyumlu bir sözleşme oluşturmak için yayına almadan önce mutlaka bir
+            hukuk danışmanına/avukata onaylatınız. Şirket bilgileri (unvan, adres, MERSİS/vergi no vb.) aşağıda
+            <strong>placeholder</strong> olarak bırakılmıştır; gerçek bilgilerinizle doldurulmalıdır.
+        </div>
+    </div>
+
+    <div class="legal-card">
+
+        <h2>1. Taraflar</h2>
+        <p>İşbu Mesafeli Satış Sözleşmesi ("Sözleşme"), aşağıda bilgileri yer alan SATICI ile Sözleşme'yi
+            elektronik ortamda onaylayan ALICI arasında, ALICI'nın SATICI'ya ait internet sitesi üzerinden
+            elektronik ortamda sipariş verdiği ürün/hizmetin satışı ve teslimi ile ilgili olarak 6502 sayılı
+            Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği hükümleri gereğince
+            tarafların hak ve yükümlülüklerini düzenler.</p>
+
+        <div class="placeholder-box">
+            <div class="row-item"><span class="lbl">Satıcı Ünvanı:</span><span class="val">[Satıcı Ünvanı]</span></div>
+            <div class="row-item"><span class="lbl">Adres:</span><span class="val">[Adres]</span></div>
+            <div class="row-item"><span class="lbl">Telefon:</span><span class="val">[Telefon]</span></div>
+            <div class="row-item"><span class="lbl">E-posta:</span><span class="val">[E-posta]</span></div>
+            <div class="row-item"><span class="lbl">MERSİS/Vergi No:</span><span class="val">[MERSİS/Vergi No]</span></div>
+            <div class="row-item"><span class="lbl">Vergi Dairesi:</span><span class="val">[Vergi Dairesi]</span></div>
+        </div>
+
+        <p>ALICI: Sözleşme konusu ürünü/hizmeti internet sitesi üzerinden sipariş eden, teslimat/fatura
+            bilgilerini giren gerçek veya tüzel kişi (bundan sonra "Müşteri" olarak da anılacaktır).</p>
+
+        <h2>2. Sözleşmenin Konusu</h2>
+        <p>İşbu Sözleşme'nin konusu, ALICI'nın SATICI'ya ait internet sitesinden elektronik ortamda siparişini
+            verdiği, aşağıda nitelikleri ve satış fiyatı belirtilen ürün/hizmetin satışı ve teslimi ile ilgili
+            olarak 6502 sayılı Kanun ve Mesafeli Sözleşmeler Yönetmeliği hükümleri gereğince tarafların hak ve
+            yükümlülüklerinin belirlenmesidir.</p>
+
+        <h2>3. Ürün/Hizmet Bilgisi</h2>
+        <p>Sözleşme konusu ürün/hizmetin türü, miktarı, marka/modeli, rengi, adedi, satış bedeli, ödeme şekli,
+            teslimat adresi, fatura bilgileri ve teslim edilecek kişi gibi bilgiler, SATICI'nın internet
+            sitesindeki ürün sayfasında ve/veya ALICI'nın sipariş onayı sırasında (checkout) kendisine sunulan
+            sipariş özetinde/faturada belirtildiği gibidir ve bu bilgiler işbu Sözleşme'nin ayrılmaz bir
+            parçasıdır.</p>
+        <p>Ölçüye/projeye özel (teklif ile fiyatlandırılan) ürünlerde nihai fiyat, teklif sürecinde ALICI ile
+            mutabık kalınan şartlara göre ayrıca belirlenir ve ALICI'ya bildirilir.</p>
+
+        <h2>4. Genel Hükümler / Sipariş ve Ödeme Süreci</h2>
+        <ul>
+            <li>ALICI, internet sitesinde Sözleşme konusu ürünün temel nitelikleri, satış fiyatı ve ödeme şekli
+                ile teslimata ilişkin ön bilgileri okuyup bilgi sahibi olduğunu ve elektronik ortamda gerekli
+                teyidi verdiğini kabul eder.</li>
+            <li>Sipariş, ALICI'nın checkout formundaki teslimat/iletişim bilgilerini eksiksiz doldurup Ön
+                Bilgilendirme Formu ve işbu Sözleşme'yi onaylaması ile oluşur.</li>
+            <li>Ödeme, SATICI'nın anlaşmalı olduğu ödeme kuruluşu (iyzico) üzerinden, Visa/Mastercard kredi
+                veya banka kartı ile alınır. Kart bilgileri (kart numarası, son kullanma tarihi, güvenlik kodu)
+                SATICI'nın sunucularında hiçbir şekilde saklanmaz; ödeme doğrudan ödeme kuruluşunun güvenli
+                (3D Secure destekli) sayfası üzerinden gerçekleştirilir.</li>
+            <li>Sipariş, ödeme onaylandıktan sonra kesinleşir ve hazırlık sürecine alınır.</li>
+        </ul>
+
+        <h2>5. Teslimat</h2>
+        <p>Ürün, ALICI'nın sipariş sırasında belirttiği teslimat adresine, SATICI'nın anlaşmalı olduğu kargo
+            firması aracılığıyla teslim edilir. Teslimat süreleri, kargo ücretleri ve bölgesel kısıtlamalar
+            hakkında ayrıntılı bilgi <a th:href="@{/teslimat-ve-iade}" style="color:var(--gold);">Teslimat ve
+            İade</a> sayfasında yer almaktadır.</p>
+
+        <h2>6. Cayma Hakkı</h2>
+        <p>ALICI, hiçbir hukuki ve cezai sorumluluk üstlenmeksizin ve hiçbir gerekçe göstermeksizin, ürünün
+            kendisine veya gösterdiği adresteki kişi/kuruluşa tesliminden itibaren <strong>14 (on dört) gün</strong>
+            içinde malı reddederek Sözleşme'den cayma hakkına sahiptir. Cayma hakkının kullanılması için bu süre
+            içinde SATICI'ya işbu Sözleşme'de belirtilen iletişim bilgileri üzerinden yazılı bildirimde
+            bulunulması yeterlidir.</p>
+
+        <h2>7. Cayma Hakkının Kullanılamayacağı Haller</h2>
+        <p>Mesafeli Sözleşmeler Yönetmeliği'nin ilgili hükümleri uyarınca, aşağıdaki hallerde ALICI cayma
+            hakkını kullanamaz:</p>
+        <ul>
+            <li><strong>ALICI'nın istekleri veya kişisel ihtiyaçları doğrultusunda hazırlanan (ölçüye/projeye
+                özel üretilen, "teklif" süreciyle fiyatlandırılan) ürünler</strong> (örn. özel ölçü/kapasitede
+                hazırlanan çelik halat, sapan, zincir setleri).</li>
+            <li>Niteliği itibarıyla iade edilemeyecek nitelikte olan, çabuk bozulma veya son kullanma tarihi
+                geçme ihtimali olan mallar.</li>
+            <li>Tesliminden sonra ambalaj, bant, mühür, paket gibi koruyucu unsurları açılmış olan ve iadesi
+                sağlık/hijyen açısından uygun olmayan mallar.</li>
+        </ul>
+
+        <h2>8. İade Süreci</h2>
+        <p>Cayma hakkı kapsamındaki ürünlerin iade süreci ve koşulları hakkında ayrıntılı bilgi
+            <a th:href="@{/teslimat-ve-iade}" style="color:var(--gold);">Teslimat ve İade</a> sayfasında yer
+            almaktadır. İade bedeli, yasal süre içinde ALICI'nın ödemeyi yaptığı yöntemle iade edilir.</p>
+
+        <h2>9. Temerrüt Hali ve Hukuki Sonuçları</h2>
+        <p>ALICI'nın, kredi kartı/banka kartı ile yaptığı işlemlerde temerrüde düşmesi halinde, kart sahibi
+            bankanın kendisiyle yapmış olduğu kart sözleşmesi çerçevesinde faiz ödeyeceğini ve bankaya karşı
+            sorumlu olacağını kabul eder. SATICI'nın bu durumdan herhangi bir sorumluluğu bulunmamaktadır.</p>
+
+        <h2>10. Kişisel Verilerin Korunması</h2>
+        <p>SATICI, işbu Sözleşme kapsamında elde ettiği kişisel verileri, 6698 sayılı Kişisel Verilerin
+            Korunması Kanunu ("KVKK") ve ilgili mevzuata uygun olarak işler. Ayrıntılı bilgi için
+            <a th:href="@{/gizlilik-politikasi}" style="color:var(--gold);">Gizlilik Politikası</a> sayfasını
+            inceleyebilirsiniz.</p>
+
+        <h2>11. Uyuşmazlıkların Çözümü</h2>
+        <p>İşbu Sözleşme'den doğan uyuşmazlıklarda, Ticaret Bakanlığı'nca ilan edilen değere kadar ALICI'nın
+            yerleşim yerindeki Tüketici Hakem Heyetleri ile SATICI'nın veya ALICI'nın yerleşim yerindeki Tüketici
+            Mahkemeleri yetkilidir.</p>
+
+        <h2>12. İletişim Bilgileri</h2>
+        <p>Sözleşme ile ilgili her türlü soru ve talepleriniz için aşağıdaki iletişim bilgilerinden SATICI'ya
+            ulaşabilirsiniz:</p>
+        <div class="placeholder-box">
+            <div class="row-item"><span class="lbl">Telefon:</span><span class="val">[Telefon]</span></div>
+            <div class="row-item"><span class="lbl">E-posta:</span><span class="val">[E-posta]</span></div>
+            <div class="row-item"><span class="lbl">Adres:</span><span class="val">[Adres]</span></div>
+        </div>
+
+        <h2>13. Yürürlük</h2>
+        <p>ALICI, internet sitesi üzerinden sipariş vererek ve/veya checkout sürecinde işbu Sözleşme'yi
+            onaylayarak, Sözleşme'nin tüm koşullarını kabul etmiş sayılır. İşbu Sözleşme, ALICI'nın elektronik
+            ortamda onay vermesi ile yürürlüğe girer.</p>
+
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

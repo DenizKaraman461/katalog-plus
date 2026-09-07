@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin Girişi</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body{
+            min-height:100vh; margin:0; color:#ECECEC;
+            background:linear-gradient(180deg, rgba(3,3,4,.78), rgba(3,3,4,.9)), url('/uploads/Background.png') no-repeat center center fixed;
+            background-size:cover;
+            display:flex; align-items:center; justify-content:center;
+        }
+        .admin-box{width:100%; max-width:420px; padding:16px;}
+        .admin-box form{
+            background:rgba(12,12,14,.82); backdrop-filter:blur(10px);
+            border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:28px;
+            box-shadow:0 24px 60px rgba(0,0,0,.55);
+        }
+        .admin-box h2{color:#fff; font-weight:700; margin-bottom:20px;}
+        .admin-box .form-label{color:#cdcdcd; font-weight:500;}
+        .admin-box .form-control{background:rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.15); color:#fff;}
+        .admin-box .form-control:focus{background:rgba(0,0,0,.6); color:#fff; border-color:#9aa0a6; box-shadow:0 0 0 .18rem rgba(160,160,160,.2);}
+    </style>
+</head>
+<body>
+<div class="admin-box">
+
+    <!-- Eğer admin giriş yaptıysa çıkış butonu göster -->
+    <form th:action="@{/admin/logout}" method="post" th:if="${isAdmin}">
+        <h2>Admin Paneli</h2>
+        <button type="submit" class="btn btn-danger w-100">Admin Çıkış</button>
+    </form>
+
+    <!-- Eğer admin giriş yapmamışsa login formu göster -->
+    <form th:action="@{/login}" method="post" th:unless="${isAdmin}">
+        <h2>Admin Girişi</h2>
+        <div class="mb-3">
+            <label for="username" class="form-label">Kullanıcı Adı</label>
+            <input type="text" id="username" name="username" class="form-control" required autofocus>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Şifre</label>
+            <input type="password" id="password" name="password" class="form-control" required>
+        </div>
+        <div th:if="${param.error}" class="alert alert-danger">Kullanıcı adı veya şifre yanlış!</div>
+        <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
+    </form>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

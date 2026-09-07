@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ürün Düzenle | Deniz Çelik Halat</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Saira+Condensed:wght@500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        :root{
+            --ink:#050506; --panel:rgba(14,14,16,.74); --line:rgba(255,215,0,.22);
+            --gold:#FFD700; --gold-2:#E9C200; --text:#ECECEC; --muted:#9a9a9a; --danger:#ff5252;
+            --f-display:'Saira Condensed',system-ui,sans-serif;
+            --f-body:'Inter',system-ui,sans-serif;
+            --f-mono:'JetBrains Mono',ui-monospace,monospace;
+        }
+        *{box-sizing:border-box}
+        body{
+            margin:0; min-height:100vh; color:var(--text); font-family:var(--f-body); padding-top:104px;
+            background:linear-gradient(180deg, rgba(3,3,4,.9), rgba(3,3,4,.94)), url('/uploads/Background.png') no-repeat center center fixed;
+            background-size:cover;
+        }
+
+        /* ===== ORTAK NAVBAR ===== */
+        .site-nav{background:rgba(0,0,0,.86); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:.45rem 0}
+        .site-nav .navbar-brand{padding:0; margin-right:1rem}
+        .brand-logo{height:52px; width:auto; filter:drop-shadow(0 0 10px rgba(255,215,0,.28))}
+        .navbar-toggler{border:1px solid var(--line); padding:.3rem .55rem; border-radius:8px}
+        .navbar-toggler:focus{box-shadow:0 0 0 .18rem rgba(255,215,0,.3)}
+        .navbar-toggler i{color:var(--gold); font-size:1.5rem; line-height:1}
+        .main-links{gap:.15rem}
+        .nav-link{color:#e9e9e9 !important; font-weight:500; display:flex; align-items:center; gap:8px; padding:.5rem .95rem !important; border-radius:8px; transition:.22s}
+        .nav-link i{color:var(--gold); font-size:1rem}
+        .nav-link:hover{color:#fff !important; background:rgba(255,215,0,.08)}
+        .nav-link.active{color:var(--gold) !important}
+        .nav-auth{display:flex; align-items:center; gap:10px}
+        .btn-nav-ghost{display:inline-flex; align-items:center; gap:7px; border:1.5px solid var(--line); color:var(--gold); padding:.5rem 1rem; border-radius:10px; text-decoration:none; font-weight:600; white-space:nowrap; transition:.22s}
+        .btn-nav-ghost:hover{border-color:var(--gold); background:rgba(255,215,0,.1); color:#fff}
+        .btn-nav-gold{display:inline-flex; align-items:center; gap:7px; background:linear-gradient(180deg,#FFE970,#FFD700 55%,#E9C200); color:#100d00; padding:.5rem 1.05rem; border-radius:10px; text-decoration:none; font-weight:700; white-space:nowrap; transition:.22s; box-shadow:0 6px 18px rgba(255,215,0,.22)}
+        .btn-nav-gold:hover{filter:brightness(1.06); box-shadow:0 10px 26px rgba(255,215,0,.4)}
+        .nav-shield{color:var(--gold); font-size:1.35rem; text-decoration:none; text-shadow:0 0 10px var(--gold); padding:.2rem .3rem; transition:.22s}
+        .nav-shield:hover{transform:translateY(-1px)}
+        @media (max-width:991px){
+            .navbar-collapse{background:rgba(8,8,10,.98); border:1px solid var(--line); border-radius:14px; margin-top:12px; padding:16px}
+            .nav-link{padding:.7rem .8rem !important}
+            .nav-auth{flex-wrap:wrap; margin-top:14px; padding-top:14px; border-top:1px dashed var(--line)}
+            .btn-nav-ghost,.btn-nav-gold{flex:1 1 auto; justify-content:center}
+        }
+
+        /* ===== Form panel ===== */
+        .shell{max-width:880px; margin:0 auto; padding:24px 18px 70px}
+        .form-panel{
+            position:relative; background:var(--panel); backdrop-filter:blur(16px) saturate(120%);
+            border:1px solid var(--line); border-radius:18px; padding:34px 36px 30px;
+            box-shadow:0 28px 70px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.04);
+        }
+        .frame::before,.frame::after{content:""; position:absolute; width:26px; height:26px; pointer-events:none}
+        .frame::before{top:12px; left:12px; border-top:2px solid var(--gold); border-left:2px solid var(--gold)}
+        .frame::after{bottom:12px; right:12px; border-bottom:2px solid var(--gold); border-right:2px solid var(--gold)}
+
+        .eyebrow{font-family:var(--f-mono); font-size:.72rem; letter-spacing:.3em; color:var(--gold-2); text-transform:uppercase; margin-bottom:6px}
+        .form-title{font-family:var(--f-display); font-weight:700; text-transform:uppercase; letter-spacing:.05em; font-size:2.1rem; color:#fff; margin:0 0 26px; text-shadow:0 0 10px rgba(255,215,0,.45), 0 0 26px rgba(255,215,0,.2)}
+
+        .form-label{font-size:.78rem; letter-spacing:.06em; text-transform:uppercase; color:#cdcdcd; margin-bottom:6px; font-weight:500}
+        .form-control,.form-select{
+            background:rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.12); color:#fff;
+            border-radius:10px; padding:.7rem .9rem; transition:.25s;
+        }
+        .form-control::placeholder{color:#6f6f6f}
+        .form-control:focus,.form-select:focus{
+            background:rgba(0,0,0,.6); color:#fff; border-color:var(--gold);
+            box-shadow:0 0 0 .18rem rgba(255,215,0,.16), 0 0 18px rgba(255,215,0,.25);
+        }
+        .form-select option{background:#0c0c0e; color:#fff}
+        textarea.form-control{resize:vertical; min-height:96px}
+        .form-control[type=file]::file-selector-button{
+            background:rgba(255,215,0,.14); color:var(--gold); border:1px solid var(--line);
+            border-radius:8px; padding:.3rem .8rem; margin-right:12px; font-weight:600; cursor:pointer; transition:.2s;
+        }
+        .form-control[type=file]::file-selector-button:hover{background:var(--gold); color:#100d00}
+
+        .preview-wrap{display:flex; align-items:center; gap:12px; margin-bottom:6px}
+        .image-preview{max-height:120px; border-radius:10px; border:1px solid var(--line); box-shadow:0 0 14px rgba(255,215,0,.25); object-fit:contain; background:#000; padding:6px}
+        .no-img{font-family:var(--f-mono); color:#666; font-size:.8rem; letter-spacing:.1em}
+
+        .actions{display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-top:8px}
+        .btn-gold{
+            display:inline-flex; align-items:center; gap:8px; padding:.72rem 1.5rem; border:none; border-radius:11px; cursor:pointer;
+            font-family:var(--f-display); font-weight:600; letter-spacing:.06em; text-transform:uppercase; font-size:1rem;
+            color:#100d00; background:linear-gradient(180deg,#FFE970,#FFD700 55%,#E9C200);
+            box-shadow:0 8px 24px rgba(255,215,0,.28); transition:transform .2s, box-shadow .2s, filter .2s; text-decoration:none;
+        }
+        .btn-gold:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(255,215,0,.45); filter:brightness(1.05)}
+        .btn-ghost{display:inline-flex; align-items:center; gap:8px; padding:.72rem 1.35rem; border:1.5px solid var(--line); border-radius:11px; color:#ddd; text-decoration:none; font-weight:600; transition:.22s; background:transparent}
+        .btn-ghost:hover{border-color:#fff; color:#fff; background:rgba(255,255,255,.05)}
+        .btn-danger-solid{display:inline-flex; align-items:center; gap:8px; padding:.72rem 1.35rem; border:1px solid rgba(255,82,82,.5); border-radius:11px; color:#ff8b8b; background:rgba(255,82,82,.1); text-decoration:none; font-weight:600; transition:.22s}
+        .btn-danger-solid:hover{background:rgba(255,82,82,.22); color:#fff; box-shadow:0 0 18px rgba(255,82,82,.35)}
+
+        .panel-divider{height:1px; background:linear-gradient(90deg, transparent, var(--line), transparent); margin:24px 0}
+
+        a:focus-visible,button:focus-visible,.form-control:focus-visible,.form-select:focus-visible{outline:2px solid var(--gold); outline-offset:2px}
+        @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+        @media (max-width:575px){ .form-panel{padding:26px 22px} .form-title{font-size:1.7rem} }
+    </style>
+</head>
+<body>
+
+<!-- ===== ORTAK NAVBAR ===== -->
+<nav class="navbar navbar-expand-lg fixed-top site-nav">
+    <div class="container">
+        <a class="navbar-brand" href="/"><img src="/uploads/deniz-logo.png" alt="Deniz Çelik Halat" class="brand-logo" /></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Menüyü aç/kapat">
+            <i class="bi bi-list"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav mx-lg-auto mb-2 mb-lg-0 main-links">
+                <li class="nav-item"><a class="nav-link" href="/"><i class="bi bi-house-fill"></i> Anasayfa</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/products"><i class="bi bi-grid-3x3-gap-fill"></i> Ürünler</a></li>
+                <li class="nav-item"><a class="nav-link" href="/cart"><i class="bi bi-cart-fill"></i> Sepetim</a></li>
+                <li class="nav-item"><a class="nav-link" href="/#markalarimiz-hakkimizda"><i class="bi bi-info-circle-fill"></i> Hakkımızda</a></li>
+            </ul>
+            <div class="nav-auth">
+                <a href="/login" class="btn-nav-ghost"><i class="bi bi-box-arrow-in-right"></i> Giriş Yap</a>
+                <a href="/register" class="btn-nav-gold"><i class="bi bi-person-plus-fill"></i> Kayıt Ol</a>
+                <a href="/login" class="nav-shield" title="Admin Girişi"><i class="bi bi-shield-lock"></i></a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="shell">
+    <div class="form-panel frame">
+        <div class="eyebrow">Yönetim / Admin</div>
+        <h2 class="form-title">Ürünü Düzenle</h2>
+
+        <form th:action="@{'/edit/' + ${product.id}}" th:object="${product}" method="post" enctype="multipart/form-data">
+
+            <div class="mb-3">
+                <label for="name" class="form-label">Ürün Adı</label>
+                <input type="text" class="form-control" id="name" th:field="*{name}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="price" class="form-label">Fiyat</label>
+                <input type="number" step="0.01" class="form-control" id="price" th:field="*{price}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="currency" class="form-label">Para Birimi</label>
+                <select class="form-select" id="currency" th:field="*{currency}" required>
+                    <option th:each="cur : ${currencies}" th:value="${cur}"
+                            th:text="|${cur.label} (${cur.symbol})|">USD ($)</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">Açıklama</label>
+                <textarea class="form-control" id="description" th:field="*{description}" rows="3" required></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="category" class="form-label">Kategori</label>
+                <select class="form-select" id="category" th:field="*{category.id}" required>
+                    <option value="">Seçiniz</option>
+                    <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"
+                            th:selected="${cat.id == product.category?.id}"></option>
+                </select>
+            </div>
+
+            <!-- ===== Ölçü / Fiyatlandırma ===== -->
+            <div class="mb-3">
+                <label for="measurementMode" class="form-label">Ölçü / Fiyat Modu</label>
+                <select class="form-select" id="measurementMode" th:field="*{measurementMode}">
+                    <option th:value="'NONE'">Ölçü yok / sabit fiyat</option>
+                    <option th:value="'CUSTOM'">Müşteri ölçü girsin / metraj fiyatı</option>
+                    <option th:value="'PRESET'">Hazır ölçü seçenekleri / seçenek fiyatlı</option>
+                    <option th:value="'PRESET_AMOUNT'">Seçenek + miktar (seçenek birim fiyatı × girilen metraj)</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="measurementUnitLabel" class="form-label">Ölçü Birimi (CUSTOM / Seçenek+miktar için)</label>
+                <input type="text" class="form-control" id="measurementUnitLabel"
+                       th:field="*{measurementUnitLabel}" placeholder="örn: metre, cm, kg">
+            </div>
+
+            <div class="mb-3">
+                <label for="measurementOptionsText" class="form-label">Hazır Ölçü Seçenekleri (PRESET için)</label>
+                <textarea class="form-control" id="measurementOptionsText" th:field="*{measurementOptionsText}" rows="4"
+                          placeholder="1 metre | 100&#10;5 metre | 450&#10;10 metre | 850"></textarea>
+                <small style="display:block; margin-top:8px; color:#9a9a9a; font-size:.8rem;">
+                    Hazır ölçü seçeneklerini her satıra "seçenek | fiyat" şeklinde yazın. Örn: 5 metre | 450<br>Seçenek + miktar modunda her satır <b>birim fiyat</b> olarak kullanılır. Örn: <code>8 mm K.Öz | 120</code>. Müşteri ayrıca metre/miktar girer.<br>
+                    <b>Opsiyonel 3. değer — kargo ağırlığı (kg/m):</b> Ölçüye göre ağırlığı değişen ürünlerde (örn. çelik halat çapları) satırın sonuna <code>| kg/m</code> ekleyin: <code>8 mm K.Öz | 3.56 | 0.28</code>. Boş bırakılırsa bu seçenek için üründeki genel "Kargo Ağırlığı" kullanılır.
+                </small>
+            </div>
+
+            <!-- ===== Kargo — metre bazlı VEYA adet bazlı ürünler için TEK ağırlık inputu.
+                 Seçilen tipe göre gerçek kayıt (kg/metre veya kg/adet) sunucu tarafında
+                 (ProductServiceImpl.applyShippingWeight) yönlendirilir. Mevcut ürünün tipi
+                 ve değeri (shippingWeightValue getter'ı üzerinden) önceden doldurulur. ===== -->
+            <div class="mb-3">
+                <label class="form-label">Kargo Ağırlığı Tipi</label>
+                <div style="display:flex; gap:24px; margin-top:6px;">
+                    <label style="display:flex; align-items:center; gap:6px; font-weight:normal; cursor:pointer;">
+                        <input type="radio" th:field="*{shippingWeightType}" value="PER_METER" onchange="toggleShippingWeightUnit()" />
+                        Metre başına (kg/m)
+                    </label>
+                    <label style="display:flex; align-items:center; gap:6px; font-weight:normal; cursor:pointer;">
+                        <input type="radio" th:field="*{shippingWeightType}" value="PER_UNIT" onchange="toggleShippingWeightUnit()" />
+                        Adet başına (kg/adet)
+                    </label>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="shippingWeightValue" class="form-label">
+                    Kargo Ağırlığı (kg) <span id="shippingWeightUnitLabel" style="color:#9a9a9a; font-weight:normal;">— kg/metre</span>
+                </label>
+                <input type="number" step="0.0001" min="0.0001" class="form-control" id="shippingWeightValue"
+                       th:field="*{shippingWeightValue}" placeholder="Örn: 0.1400" />
+                <small style="display:block; margin-top:8px; color:#9a9a9a; font-size:.8rem;" id="shippingWeightHint">
+                    1 metre ürünün kilogram ağırlığı. Kargo hesaplamasında kullanılacaktır.
+                </small>
+            </div>
+
+            <script>
+                function toggleShippingWeightUnit() {
+                    var perMeter = document.querySelector('input[name="shippingWeightType"][value="PER_METER"]').checked;
+                    var unitLabel = document.getElementById('shippingWeightUnitLabel');
+                    var hint = document.getElementById('shippingWeightHint');
+                    var input = document.getElementById('shippingWeightValue');
+                    if (perMeter) {
+                        unitLabel.textContent = '— kg/metre';
+                        hint.textContent = '1 metre ürünün kilogram ağırlığı. Kargo hesaplamasında kullanılacaktır.';
+                        input.placeholder = 'Örn: 0.1400';
+                    } else {
+                        unitLabel.textContent = '— kg/adet';
+                        hint.textContent = '1 adet ürünün kilogram ağırlığı. Kargo hesaplamasında kullanılacaktır.';
+                        input.placeholder = 'Örn: 0.0500';
+                    }
+                }
+                document.addEventListener('DOMContentLoaded', toggleShippingWeightUnit);
+            </script>
+
+            <!-- ===== Yayın & Stok (basit) ===== -->
+            <div class="mb-3" style="display:flex; align-items:center; gap:10px;">
+                <input type="checkbox" id="inStock" th:field="*{inStock}"
+                       style="width:18px; height:18px; accent-color:var(--gold);">
+                <label for="inStock" class="form-label" style="margin:0;">Stokta var (satın alınabilir)</label>
+            </div>
+
+            <div class="mb-3" style="display:flex; align-items:center; gap:10px;">
+                <input type="checkbox" id="active" th:field="*{active}"
+                       style="width:18px; height:18px; accent-color:var(--gold);">
+                <label for="active" class="form-label" style="margin:0;">Yayında (aktif)</label>
+            </div>
+
+            <div class="panel-divider"></div>
+
+            <div class="mb-3">
+                <label class="form-label">Mevcut Ürün Görseli</label>
+                <div class="preview-wrap">
+                    <img th:if="${product.imagePath != null}"
+                         th:src="@{${product.imagePath} + '?t=' + ${#dates.format(#dates.createNow(), 'yyyyMMddHHmmss')}}"
+                         class="image-preview" alt="Ürün Görseli">
+                    <span class="no-img" th:if="${product.imagePath == null}">GÖRSEL YOK</span>
+                </div>
+            </div>
+            <div class="mb-4">
+                <label for="imageFile" class="form-label">Yeni Ürün Görseli Yükle (İsteğe Bağlı)</label>
+                <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Mevcut Tablo Görseli</label>
+                <div class="preview-wrap">
+                    <img th:if="${product.tableImagePath != null}"
+                         th:src="@{${product.tableImagePath} + '?t=' + ${#dates.format(#dates.createNow(), 'yyyyMMddHHmmss')}}"
+                         class="image-preview" alt="Tablo Görseli">
+                    <span class="no-img" th:if="${product.tableImagePath == null}">TABLO YOK</span>
+                </div>
+            </div>
+            <div class="mb-4">
+                <label for="tableImageFile" class="form-label">Yeni Tablo Görseli Yükle (İsteğe Bağlı)</label>
+                <input type="file" class="form-control" id="tableImageFile" name="tableImageFile" accept="image/*">
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="btn-gold"><i class="bi bi-check-lg"></i> Kaydet</button>
+                <a href="/products" class="btn-ghost"><i class="bi bi-x-lg"></i> İptal</a>
+            </div>
+        </form>
+
+        <div class="panel-divider"></div>
+
+        <!-- Sil (ayrı POST formu, CSRF korumalı) -->
+        <div class="actions">
+            <form th:action="@{'/delete/' + ${product.id}}" method="post"
+                  onsubmit="return confirm('Bu ürünü silmek istediğinize emin misiniz?');"
+                  style="margin:0;">
+                <button type="submit" class="btn-danger-solid">
+                    <i class="bi bi-trash3-fill"></i> Ürünü Sil
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
